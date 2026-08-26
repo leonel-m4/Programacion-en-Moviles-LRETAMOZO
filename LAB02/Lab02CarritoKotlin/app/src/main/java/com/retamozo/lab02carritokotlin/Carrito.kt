@@ -9,6 +9,11 @@ fun main() {
     val carrito = mutableListOf<Producto>() // lista vacía de productos
     println("Cliente: $nombreCliente")
     println()
+
+    carrito.add(Producto("Laptop HP", 2500.0, 1))
+    carrito.add(Producto("Mouse Logitech", 45.5, 2))
+    carrito.add(Producto("Teclado Redragon", 120.0, 6))
+    carrito.add(Producto("Audífonos Sony", 180.0, 4))
 }
 
 data class Producto(
