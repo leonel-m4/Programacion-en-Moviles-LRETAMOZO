@@ -5,7 +5,7 @@ plugins {
 }
 
 application {
-    mainClass.set("com.retamozo.lab02carritokotlin.CarritoKt")
+    mainClass.set("com.retamozo.lib.TestRunKt")
 }
 java {
     sourceCompatibility = JavaVersion.VERSION_11
