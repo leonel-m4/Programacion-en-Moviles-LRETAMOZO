@@ -23,5 +23,5 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "lab02carritokotlin"
-include(":app")
+// include(":app")
 include(":lib")
