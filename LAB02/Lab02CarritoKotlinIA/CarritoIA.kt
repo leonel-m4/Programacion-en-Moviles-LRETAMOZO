@@ -4,11 +4,11 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.ArrayList
 import java.util.Locale
+import java.util.Scanner
 
 /**
  * =========================================================================
  * 0. CONSTANTES DE NEGOCIO
- * Evitamos "números mágicos" para mejorar la mantenibilidad.
  * =========================================================================
  */
 object Constants {
@@ -22,7 +22,6 @@ object Constants {
 /**
  * =========================================================================
  * 1. ABSTRACCIÓN Y POLIMORFISMO DE INTERFAZ
- * Definimos un contrato para cualquier cosa que pueda calcular impuestos.
  * =========================================================================
  */
 interface Taxable {
@@ -37,7 +36,6 @@ class StandardTax : Taxable {
 /**
  * =========================================================================
  * 2. PATRÓN STRATEGY PARA DESCUENTOS
- * Esto permite cambiar la lógica de descuentos sin modificar el carrito.
  * =========================================================================
  */
 interface DiscountStrategy {
@@ -58,40 +56,49 @@ class TecsupDiscountStrategy : DiscountStrategy {
 
 /**
  * =========================================================================
- * 3. MODELO DE DATOS (POO + ENCAPSULAMIENTO)
+ * 3. MODELO DE DATOS (POO + ENCAPSULAMIENTO + POLIMORFISMO)
  * =========================================================================
  */
 abstract class Product(
     val name: String,
     val price: BigDecimal,
     var quantity: Int,
-    private val taxLogic: Taxable // Inyección de comportamiento
+    protected val taxLogic: Taxable
 ) {
-    fun getTotalWithTax(): BigDecimal {
+    open fun calculateLineTotal(): BigDecimal {
         val base = price.multiply(BigDecimal(quantity))
-        return base.add(taxLogic.calculateTax(base))
+        val tax = taxLogic.calculateTax(base)
+        return base.add(tax)
     }
+
+    abstract fun getCategoryName(): String
 
     fun getFormattedLine(): String {
         val lineTotal = price.multiply(BigDecimal(quantity))
-        return java.lang.String.format(Locale.US, "%-20s x%d  S/ %8.2f", name, quantity, lineTotal)
+        return java.lang.String.format(Locale.US, "[%-10s] %-20s x%d  S/ %8.2f", 
+            getCategoryName(), name, quantity, lineTotal)
     }
 }
 
 class TechProduct(name: String, price: BigDecimal, quantity: Int)
-    : Product(name, price, quantity, StandardTax())
+    : Product(name, price, quantity, StandardTax()) {
+    override fun getCategoryName(): String = "TECH"
+}
+
+class OfficeProduct(name: String, price: BigDecimal, quantity: Int)
+    : Product(name, price, quantity, StandardTax()) {
+    override fun getCategoryName(): String = "OFFICE"
+}
 
 /**
  * =========================================================================
- * 4. GESTOR DE SESIÓN DE COMPRA (ENCAPSULAMIENTO ROBUSTO)
+ * 4. GESTOR DE SESIÓN DE COMPRA
  * =========================================================================
  */
 class ShoppingSession(
     val customerName: String,
     private val discountStrategy: DiscountStrategy
 ) {
-    // Backing property: La lista es privada y mutable internamente,
-    // pero se expone como una lista inmutable hacia afuera.
     private val _items = ArrayList<Product>()
     val items: List<Product> get() = _items
 
@@ -99,13 +106,10 @@ class ShoppingSession(
         _items.add(product)
     }
 
-    /**
-     * Optimización: Cálculo consolidado para evitar redundancia y múltiples iteraciones.
-     */
     fun calculateSummary(): Summary {
-        val subtotal = _items.sumOfBigDecimal { p: Product -> p.price.multiply(BigDecimal(p.quantity)) }
-        val totalTaxes = _items.sumOfBigDecimal { p: Product ->
-            p.getTotalWithTax().subtract(p.price.multiply(BigDecimal(p.quantity)))
+        val subtotal = _items.sumOfBigDecimal { p -> p.price.multiply(BigDecimal(p.quantity)) }
+        val totalTaxes = _items.sumOfBigDecimal { p ->
+            p.calculateLineTotal().subtract(p.price.multiply(BigDecimal(p.quantity)))
         }
         val totalBruto = subtotal.add(totalTaxes)
         val discount = discountStrategy.calculateDiscount(totalBruto)
@@ -122,10 +126,6 @@ class ShoppingSession(
     )
 }
 
-/**
- * Extensión para sumOf con BigDecimal.
- * Se usa un nombre distinto para evitar conflictos de resolución en entornos sin SDK completo.
- */
 inline fun <T> Iterable<T>.sumOfBigDecimal(selector: (T) -> BigDecimal): BigDecimal {
     var sum = BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP)
     for (element in this) {
@@ -136,44 +136,67 @@ inline fun <T> Iterable<T>.sumOfBigDecimal(selector: (T) -> BigDecimal): BigDeci
 
 /**
  * =========================================================================
- * 5. PUNTO DE ENTRADA (MAIN)
+ * 5. PUNTO DE ENTRADA (MAIN INTERACTIVO)
  * =========================================================================
  */
 fun main() {
+    val reader = Scanner(System.`in`).useLocale(Locale.US)
+    
     System.out.println("====================================================")
-    System.out.println("   TECSUP STORE - ARQUITECTURA SOLID (KOTLIN)      ")
+    System.out.println("   TECSUP STORE - SISTEMA DE VENTAS INTERACTIVO    ")
     System.out.println("====================================================")
 
-    // Configuramos la sesión con una estrategia de descuento específica
     val session = ShoppingSession("Leonel Retamozo", TecsupDiscountStrategy())
 
-    // Agregamos productos (Usando BigDecimal para precisión financiera)
-    session.addProduct(TechProduct("Laptop HP", BigDecimal("2500.00"), 1))
-    session.addProduct(TechProduct("Mouse Logitech", BigDecimal("45.50"), 2))
-    session.addProduct(TechProduct("Teclado Redragon", BigDecimal("120.00"), 6))
-    session.addProduct(TechProduct("Audífonos Sony", BigDecimal("180.00"), 4))
+    System.out.print("¿Cuántos productos desea registrar? ")
+    val n = if (reader.hasNextInt()) reader.nextInt() else 0
+    if (reader.hasNextLine()) reader.nextLine() 
 
-    // Detalle de la transacción
-    System.out.println("Cliente: ${session.customerName}")
-    System.out.println("---------------------------------------------")
-    val currentItems = session.items
-    var index = 0
-    for (p in currentItems) {
-        System.out.println("${index + 1}. ${p.getFormattedLine()}")
-        index++
+    for (i in 1..n) {
+        System.out.println("\nProducto #$i:")
+        System.out.print("Nombre: ")
+        val name = reader.nextLine()
+        
+        System.out.print("Precio (ejm: 1500.50): ")
+        val price = if (reader.hasNextBigDecimal()) reader.nextBigDecimal() else BigDecimal.ZERO
+        
+        System.out.print("Cantidad: ")
+        val qty = if (reader.hasNextInt()) reader.nextInt() else 0
+        
+        System.out.println("Categoría: (1) Tecnología, (2) Oficina")
+        System.out.print("Selección: ")
+        val type = if (reader.hasNextInt()) reader.nextInt() else 1
+        if (reader.hasNextLine()) reader.nextLine() 
+
+        val product = if (type == 1) {
+            TechProduct(name, price, qty)
+        } else {
+            OfficeProduct(name, price, qty)
+        }
+        
+        session.addProduct(product)
     }
-    System.out.println("---------------------------------------------")
 
-    // Resumen Financiero optimizado
+    System.out.println("\n\nGenerando comprobante...")
+    System.out.println("============================================================")
+    System.out.println("Cliente: ${session.customerName}")
+    System.out.println("------------------------------------------------------------")
+    
+    val currentItems = session.items
+    for (i in 0 until currentItems.size) {
+        val p = currentItems[i]
+        System.out.println("${i + 1}. ${p.getFormattedLine()}")
+    }
+    
+    System.out.println("------------------------------------------------------------")
     val summary = session.calculateSummary()
 
     System.out.println(java.lang.String.format(Locale.US, "Subtotal:            S/ %10.2f", summary.subtotal))
     System.out.println(java.lang.String.format(Locale.US, "IGV (18%%):           S/ %10.2f", summary.totalTaxes))
     System.out.println(java.lang.String.format(Locale.US, "Descuento:          -S/ %10.2f", summary.discount))
-    System.out.println("---------------------------------------------")
+    System.out.println("------------------------------------------------------------")
     System.out.println(java.lang.String.format(Locale.US, "TOTAL NETO:          S/ %10.2f", summary.totalNeto))
 
-    // Lógica de producto destacado
     var maxProduct: Product? = null
     for (p in currentItems) {
         if (maxProduct == null || p.price.compareTo(maxProduct.price) > 0) {
@@ -182,8 +205,7 @@ fun main() {
     }
 
     if (maxProduct != null) {
-        System.out.println("\nInversión principal: ${maxProduct.name} (S/ ${maxProduct.price})")
+        System.out.println("\nInversión principal: ${maxProduct.name} (${maxProduct.getCategoryName()})")
     }
-
-    System.out.println("\n[Arquitectura: Strategy Pattern & Interface Injection & BigDecimal Precision]")
+    System.out.println("============================================================")
 }
