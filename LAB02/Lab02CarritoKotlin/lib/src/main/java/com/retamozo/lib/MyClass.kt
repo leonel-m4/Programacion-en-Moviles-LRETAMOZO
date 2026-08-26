@@ -1,4 +1,4 @@
-package com.retamozo.lab02carritokotlin
+package com.retamozo.lib
 
 fun main() {
     println("=========================================")
