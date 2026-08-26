@@ -5,7 +5,7 @@ fun main() {
     println(" CARRITO DE COMPRAS - TIENDA TECSUP ")
     println("=========================================")
 
-    val nombreCliente = "Juan Leon" // String (inferido)
+    val nombreCliente = "Leonel Retamozo" // String (inferido)
     val carrito = mutableListOf<Producto>() // lista vacía de productos
     println("Cliente: $nombreCliente")
     println()
@@ -18,6 +18,14 @@ fun main() {
     for (producto in carrito) {
         println("Producto agregado: ${producto.nombre}")
     }
+
+    val subtotal = calcularSubtotal(carrito)
+    val igv = calcularIGV(subtotal)
+    val total = calcularTotal(subtotal,igv)
+
+    println("Subtotal: S/ $subtotal")
+    println("IGV (18%): S/ $igv")
+    println("TOTAL: S/ $total")
 }
 
 data class Producto(
