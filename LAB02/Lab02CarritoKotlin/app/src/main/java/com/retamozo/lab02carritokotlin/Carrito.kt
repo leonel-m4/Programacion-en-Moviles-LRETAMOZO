@@ -14,6 +14,10 @@ fun main() {
     carrito.add(Producto("Mouse Logitech", 45.5, 2))
     carrito.add(Producto("Teclado Redragon", 120.0, 6))
     carrito.add(Producto("Audífonos Sony", 180.0, 4))
+
+    for (producto in carrito) {
+        println("Producto agregado: ${producto.nombre}")
+    }
 }
 
 data class Producto(
