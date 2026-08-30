@@ -10,10 +10,17 @@ fun main() {
     println("Cliente: $nombreCliente")
     println()
 
-    carrito.add(Producto("Laptop HP", 2500.0, 1))
-    carrito.add(Producto("Mouse Logitech", 45.5, 2))
-    carrito.add(Producto("Teclado Redragon", 120.0, 6))
-    carrito.add(Producto("Audífonos Sony", 180.0, 4))
+    while (true){
+        println("Ingrese el nombre del producto (o 'salir' para finalizar): ")
+        val nombre = readln()
+        if(nombre == "salir")break
+        println("Ingrese el precio del producto: ")
+        val precio = readln().toDouble()
+        println("Ingrese la cantidad del producto: ")
+        val cantidad = readln().toInt()
+        carrito.add(Producto(nombre, precio, cantidad))
+        println("Se agrego el producto")
+    }
 
     for (producto in carrito) {
         println("Producto agregado: ${producto.nombre}")

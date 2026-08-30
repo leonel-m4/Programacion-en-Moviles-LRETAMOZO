@@ -1,6 +1,11 @@
 plugins {
     id("java-library")
     alias(libs.plugins.jetbrains.kotlin.jvm)
+    id("application")
+}
+
+application {
+    mainClass.set("com.retamozo.lib.TestRunKt")
 }
 java {
     sourceCompatibility = JavaVersion.VERSION_11
