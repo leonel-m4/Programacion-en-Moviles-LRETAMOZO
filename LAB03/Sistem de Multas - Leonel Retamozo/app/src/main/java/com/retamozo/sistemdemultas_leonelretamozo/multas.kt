@@ -34,6 +34,12 @@ fun main(){
     println()
 
     val diasAtraso = calcularAtraso(FechaDevolucion,FechaEntrega)
+    val montoMulta = calcularMulta(tipoUsuario,diasAtraso)
+    val estado = if(diasAtraso > 0){
+        "Devuelto con $diasAtraso dias de atraso"
+    } else{
+        "Entregado a tiempo"
+    }
 
     println("Titulo del libro: $nombreLibro")
     println("Nombre del usuario: $nombreUsuario")
@@ -41,7 +47,8 @@ fun main(){
     println("Fecha de prestamo: $FechaPrestamo")
     println("Fecha de entrega: $FechaEntrega")
     println("Fecha de devolucion: $FechaDevolucion")
-    println("Estado: Devuelto con $diasAtraso dias de atraso")
+    println(estado)
+    println("Multa: $montoMulta")
 }
 
 data class PrestamoLibro(
@@ -56,4 +63,13 @@ data class PrestamoLibro(
 fun calcularAtraso(devolucion: LocalDate,entrega: LocalDate): Long{
     val dias = devolucion.toEpochDay() - entrega.toEpochDay()
     return dias
+}
+
+fun calcularMulta(tipoUsuario: String, diasAtraso: Long): Double{
+    val tarifaDia = when(tipoUsuario){
+        "Alumno" -> 1.50
+        "Docente" -> 3.00
+        else -> 0.0
+    }
+    return diasAtraso * tarifaDia
 }
