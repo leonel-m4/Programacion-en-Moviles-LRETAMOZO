@@ -9,11 +9,9 @@ fun main(){
 
     print("Titulo del libro: ")
     val nombreLibro = readLine()!!
-    println()
 
     print("Nombre del usuario: ")
     val nombreUsuario = readLine()!!
-    println()
 
     println("Tipo de usuario:")
     println("1. Alumno")
@@ -25,7 +23,6 @@ fun main(){
         2 -> "Docente"
         else -> "No válido"
     }
-    println()
 
     val formato = DateTimeFormatter.ofPattern("dd/MM/yyyy")
     print("Fecha de prestamo(dd/MM/yyyy): ")
@@ -36,12 +33,15 @@ fun main(){
     val FechaDevolucion = LocalDate.parse(readLine()!!,formato)
     println()
 
+    val diasAtraso = calcularAtraso(FechaDevolucion,FechaEntrega)
+
     println("Titulo del libro: $nombreLibro")
     println("Nombre del usuario: $nombreUsuario")
     println("Tipo de usuario: $tipoUsuario")
     println("Fecha de prestamo: $FechaPrestamo")
     println("Fecha de entrega: $FechaEntrega")
     println("Fecha de devolucion: $FechaDevolucion")
+    println("Estado: Devuelto con $diasAtraso dias de atraso")
 }
 
 data class PrestamoLibro(
@@ -52,3 +52,8 @@ data class PrestamoLibro(
     val FechaDevolucion: LocalDate,
     val FechaEntrega: LocalDate,
 )
+
+fun calcularAtraso(devolucion: LocalDate,entrega: LocalDate): Long{
+    val dias = devolucion.toEpochDay() - entrega.toEpochDay()
+    return dias
+}
