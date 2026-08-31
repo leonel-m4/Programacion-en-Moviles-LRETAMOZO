@@ -48,6 +48,7 @@ fun main(){
     println("Fecha de entrega: $FechaEntrega")
     println("Fecha de devolucion: $FechaDevolucion")
     println(estado)
+    detalleMulta(FechaDevolucion, FechaEntrega, tipoUsuario, diasAtraso)
     println("Multa: $montoMulta")
 }
 
@@ -72,4 +73,20 @@ fun calcularMulta(tipoUsuario: String, diasAtraso: Long): Double{
         else -> 0.0
     }
     return diasAtraso * tarifaDia
+}
+
+fun detalleMulta(devolucion: LocalDate, entrega: LocalDate, tipoUsuario: String, diasAtraso: Long) {
+    val tarifaDia = when(tipoUsuario){
+        "Alumno" -> 1.50
+        "Docente" -> 3.00
+        else -> 0.0
+    }
+
+    println()
+    println("Dia\tFecha\t\tMulta Dia\tAcumulado")
+    for (dia in 1..diasAtraso) {
+        val fecha = devolucion.plusDays(dia)
+        val acumulado = dia * tarifaDia
+        println("$dia\t$fecha\tS/ $tarifaDia\t\tS/ $acumulado")
+    }
 }

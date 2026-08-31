@@ -191,6 +191,6 @@
     <servers />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/Sistem_de_Multas___Leonel_Retamozo$MultasKt.ic" NAME="MultasKt Coverage Results" MODIFIED="1788152373653" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true" />
+    <SUITE FILE_PATH="coverage/Sistem_de_Multas___Leonel_Retamozo$MultasKt.ic" NAME="MultasKt Coverage Results" MODIFIED="1788155751347" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true" />
   </component>
 </project>
