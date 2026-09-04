@@ -13,12 +13,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -29,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -90,6 +93,7 @@ fun PantallaRegistro(modifier: Modifier = Modifier) {
     var POO by remember { mutableStateOf(0f) }
     var PM by remember { mutableStateOf(0f) }
     var BD by remember { mutableStateOf(0f) }
+    var RedondearPromedio by remember {mutableStateOf(false)}
 
     Column(
         modifier = modifier
@@ -227,5 +231,18 @@ fun PantallaRegistro(modifier: Modifier = Modifier) {
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = "Redondear promedio final",
+                modifier = Modifier.weight(1f)
+            )
+            Switch(
+                checked = RedondearPromedio,
+                onCheckedChange = {RedondearPromedio = it}
+            )
+        }
     }
 }
