@@ -42,6 +42,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.retamozo.registrodenotas_tarea.ui.theme.RegistroDeNotasTareaTheme
@@ -349,5 +350,25 @@ fun PantallaRegistro(modifier: Modifier = Modifier) {
                 }
             }
         }
+        if (promedioCalculado) {
+            Text(
+                text = "Promedio calculado correctamente",
+                color = Color(0xFF2E7D32),
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        Text(
+            text = "Desarrollado por: Leonel Mathias Retamozo De la Cruz",
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.outline,
+            style = MaterialTheme.typography.bodySmall
+        )
     }
 }
