@@ -1,25 +1,37 @@
 package com.retamozo.registrodenotas_tarea
 
 import android.os.Bundle
+import android.widget.Space
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -74,6 +86,11 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun PantallaRegistro(modifier: Modifier = Modifier) {
+    var FDP by remember { mutableStateOf(0f) }
+    var POO by remember { mutableStateOf(0f) }
+    var PM by remember { mutableStateOf(0f) }
+    var BD by remember { mutableStateOf(0f) }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -90,5 +107,125 @@ fun PantallaRegistro(modifier: Modifier = Modifier) {
         )
         Spacer(modifier = Modifier.height(24.dp))
 
+        //FDP
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = "Fundamentos de Programación (20%)",
+            )
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Slider(
+                    value = FDP,
+                    onValueChange = {FDP = it},
+                    valueRange = 0f..20f,
+                    steps = 19,
+                    modifier = Modifier.weight(2f)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Surface(
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = MaterialTheme.shapes.small
+                ) {
+                    Text(
+                        text = FDP.toInt().toString(),
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.padding(
+                            horizontal = 8.dp,
+                            vertical = 4.dp
+                        )
+                    )
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        //POO
+        Column(modifier = Modifier.fillMaxWidth()){
+            Text(
+                text = "Programación Orientada a Objetos (25%)"
+            )
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Slider(
+                    value = POO,
+                    onValueChange = {POO = it},
+                    valueRange = 0f..20f,
+                    steps = 19,
+                    modifier = Modifier.weight(2f)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Surface(
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = MaterialTheme.shapes.small
+                ) {
+                    Text(
+                        text = POO.toInt().toString(),
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.padding(
+                            horizontal = 8.dp,
+                            vertical = 4.dp
+                        )
+                    )
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        //PM
+        Column(modifier = Modifier.fillMaxWidth()){
+            Text(
+                text = "Programación en Móviles (30%)"
+            )
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Slider(
+                    value = PM,
+                    onValueChange = {PM = it},
+                    valueRange = 0f..20f,
+                    steps = 19,
+                    modifier = Modifier.weight(2f)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Surface(
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = MaterialTheme.shapes.small
+                ) {
+                    Text(
+                        text = PM.toInt().toString(),
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.padding(
+                            horizontal = 8.dp,
+                            vertical = 4.dp
+                        )
+                    )
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        //BD
+        Column(modifier = Modifier.fillMaxWidth()){
+            Text(
+                text = "Base de Datos (25%)"
+            )
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Slider(
+                    value = BD,
+                    onValueChange = {BD = it},
+                    valueRange = 0f..20f,
+                    steps = 19,
+                    modifier = Modifier.weight(2f)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Surface(
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = MaterialTheme.shapes.small
+                ) {
+                    Text(
+                        text = BD.toInt().toString(),
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.padding(
+                            horizontal = 8.dp,
+                            vertical = 4.dp
+                        )
+                    )
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
