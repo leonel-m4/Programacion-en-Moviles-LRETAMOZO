@@ -98,7 +98,7 @@ fun PantallaRegistro(modifier: Modifier = Modifier) {
     var BD by remember { mutableStateOf(0f) }
     var RedondearPromedio by remember { mutableStateOf(false) }
     var confirmarNotas by remember { mutableStateOf(false) }
-
+    var promedioCalculado by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier
@@ -268,13 +268,20 @@ fun PantallaRegistro(modifier: Modifier = Modifier) {
 
         Button(
             onClick = {
-                // Aqui va ir el cálculo del promedio
+                promedioCalculado = true
             },
             enabled = confirmarNotas,
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
                 text = "CALCULAR PROMEDIO"
+            )
+        }
+        if (!promedioCalculado) {
+            Text(
+                text = "Asigna las notas y confirma para calcular",
+                color = MaterialTheme.colorScheme.outline,
+                modifier = Modifier.padding(top = 8.dp)
             )
         }
     }
