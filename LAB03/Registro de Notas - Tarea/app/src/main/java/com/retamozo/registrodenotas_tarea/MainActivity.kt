@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -29,6 +30,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.rotate
@@ -94,6 +96,8 @@ fun PantallaRegistro(modifier: Modifier = Modifier) {
     var PM by remember { mutableStateOf(0f) }
     var BD by remember { mutableStateOf(0f) }
     var RedondearPromedio by remember {mutableStateOf(false)}
+    var confirmarNotas by remember { mutableStateOf(false) }
+
 
     Column(
         modifier = modifier
@@ -233,7 +237,8 @@ fun PantallaRegistro(modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = "Redondear promedio final",
@@ -242,6 +247,20 @@ fun PantallaRegistro(modifier: Modifier = Modifier) {
             Switch(
                 checked = RedondearPromedio,
                 onCheckedChange = {RedondearPromedio = it}
+            )
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Checkbox(
+                checked = confirmarNotas,
+                onCheckedChange = { confirmarNotas = it }
+            )
+            Text(
+                text = "Confirmo que las notas son correctas"
             )
         }
     }
