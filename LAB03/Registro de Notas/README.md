@@ -13,3 +13,8 @@ El programa trata sobre un registro de productos desarrollado en Kotlin. El prog
 # PREGUNTA PLANTEADA POR EL DOCENTE
 - **¿Qué pasaría si declaras las variables de los campos SIN remember?**
   - Si se declara las variables de los campos sin remenber, el valor que escribas se pueda reiniciar cuando ocurre una recomposición, osea cuando volteas la pantalla del celular.
+
+# MEJORA CON IA
+| Prompt que usé | Qué generó Gemini | Qué acepté o corregí (y por qué) |
+| :--- | :--- | :--- |
+| "Agregue validación de campos vacíos (si falta un dato al presionar AGREGAR, mostrar un mensaje de error en rojo en lugar de la Card) y un botón Limpiar que vacíe el formulario. Sé específico en tu prompt: dónde (PantallaRegistro), qué (el comportamiento exacto) y qué NO tocar." | Generó un nuevo estado `mensajeError`, implementó la validación de campos vacíos en el botón Agregar, añadió un botón "LIMPIAR" y corrigió el error ortográfico "PRODCUTO". | Acepté la estructura de botones y la lógica de validación básica. Corregí agregando validación numérica estricta (`toDoubleOrNull`), configuré teclados específicos (`KeyboardType`) y usé el parámetro `isError` en los campos para mejor feedback visual. |
