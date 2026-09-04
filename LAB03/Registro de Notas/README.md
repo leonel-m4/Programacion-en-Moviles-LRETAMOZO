@@ -6,9 +6,10 @@
 El programa trata sobre un registro de productos desarrollado en Kotlin. El programa permite registrar productos, ingresar su nombre, precio y cantidad, mostrar un resumen con los datos registrados y calcular el importe de la compra. Las funciones que se implementaron nos sirven para trabajar con estados, validar los datos ingresados y mostrar un mensaje de confirmación cuando el producto es registrado correctamente.
 
 # CAPTURAS
-![Screenshot_20260903-183923.png](../../../Screenshot_20260903-183923.png)
 
-![Screenshot_20260903-183948.png](../../../Screenshot_20260903-183948.png)
+<img width="720" height="1600" alt="Screenshot_20260903-183923" src="https://github.com/user-attachments/assets/cf052472-f227-45d6-b4e9-035d05746894" />
+
+<img width="720" height="1600" alt="Screenshot_20260903-183948" src="https://github.com/user-attachments/assets/43306071-2bb1-4a7a-b2f3-d26133397889" />
 
 # PREGUNTA PLANTEADA POR EL DOCENTE
 - **¿Qué pasaría si declaras las variables de los campos SIN remember?**
