@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -95,7 +96,7 @@ fun PantallaRegistro(modifier: Modifier = Modifier) {
     var POO by remember { mutableStateOf(0f) }
     var PM by remember { mutableStateOf(0f) }
     var BD by remember { mutableStateOf(0f) }
-    var RedondearPromedio by remember {mutableStateOf(false)}
+    var RedondearPromedio by remember { mutableStateOf(false) }
     var confirmarNotas by remember { mutableStateOf(false) }
 
 
@@ -123,7 +124,7 @@ fun PantallaRegistro(modifier: Modifier = Modifier) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 Slider(
                     value = FDP,
-                    onValueChange = {FDP = it},
+                    onValueChange = { FDP = it },
                     valueRange = 0f..20f,
                     steps = 19,
                     modifier = Modifier.weight(2f)
@@ -146,14 +147,14 @@ fun PantallaRegistro(modifier: Modifier = Modifier) {
         }
         Spacer(modifier = Modifier.height(16.dp))
         //POO
-        Column(modifier = Modifier.fillMaxWidth()){
+        Column(modifier = Modifier.fillMaxWidth()) {
             Text(
                 text = "Programación Orientada a Objetos (25%)"
             )
             Row(modifier = Modifier.fillMaxWidth()) {
                 Slider(
                     value = POO,
-                    onValueChange = {POO = it},
+                    onValueChange = { POO = it },
                     valueRange = 0f..20f,
                     steps = 19,
                     modifier = Modifier.weight(2f)
@@ -176,14 +177,14 @@ fun PantallaRegistro(modifier: Modifier = Modifier) {
         }
         Spacer(modifier = Modifier.height(16.dp))
         //PM
-        Column(modifier = Modifier.fillMaxWidth()){
+        Column(modifier = Modifier.fillMaxWidth()) {
             Text(
                 text = "Programación en Móviles (30%)"
             )
             Row(modifier = Modifier.fillMaxWidth()) {
                 Slider(
                     value = PM,
-                    onValueChange = {PM = it},
+                    onValueChange = { PM = it },
                     valueRange = 0f..20f,
                     steps = 19,
                     modifier = Modifier.weight(2f)
@@ -206,14 +207,14 @@ fun PantallaRegistro(modifier: Modifier = Modifier) {
         }
         Spacer(modifier = Modifier.height(16.dp))
         //BD
-        Column(modifier = Modifier.fillMaxWidth()){
+        Column(modifier = Modifier.fillMaxWidth()) {
             Text(
                 text = "Base de Datos (25%)"
             )
             Row(modifier = Modifier.fillMaxWidth()) {
                 Slider(
                     value = BD,
-                    onValueChange = {BD = it},
+                    onValueChange = { BD = it },
                     valueRange = 0f..20f,
                     steps = 19,
                     modifier = Modifier.weight(2f)
@@ -246,11 +247,11 @@ fun PantallaRegistro(modifier: Modifier = Modifier) {
             )
             Switch(
                 checked = RedondearPromedio,
-                onCheckedChange = {RedondearPromedio = it}
+                onCheckedChange = { RedondearPromedio = it }
             )
         }
-
         Spacer(modifier = Modifier.height(8.dp))
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
@@ -261,6 +262,19 @@ fun PantallaRegistro(modifier: Modifier = Modifier) {
             )
             Text(
                 text = "Confirmo que las notas son correctas"
+            )
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = {
+                // Aqui va ir el cálculo del promedio
+            },
+            enabled = confirmarNotas,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = "CALCULAR PROMEDIO"
             )
         }
     }
