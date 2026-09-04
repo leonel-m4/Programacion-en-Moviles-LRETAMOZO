@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -43,6 +45,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.retamozo.registrodenotas_tarea.ui.theme.RegistroDeNotasTareaTheme
+import kotlin.math.roundToInt
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -99,6 +102,10 @@ fun PantallaRegistro(modifier: Modifier = Modifier) {
     var RedondearPromedio by remember { mutableStateOf(false) }
     var confirmarNotas by remember { mutableStateOf(false) }
     var promedioCalculado by remember { mutableStateOf(false) }
+    var promedioPonderado by remember { mutableStateOf(0.0) }
+    var promedioFinal by remember { mutableStateOf(0.0) }
+    var observacion by remember { mutableStateOf("") }
+    var colorObservacion by remember { mutableStateOf(Color.Transparent) }
 
     Column(
         modifier = modifier
@@ -124,9 +131,8 @@ fun PantallaRegistro(modifier: Modifier = Modifier) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 Slider(
                     value = FDP,
-                    onValueChange = { FDP = it },
+                    onValueChange = { FDP = it.toInt().toFloat()},
                     valueRange = 0f..20f,
-                    steps = 19,
                     modifier = Modifier.weight(2f)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
@@ -154,9 +160,8 @@ fun PantallaRegistro(modifier: Modifier = Modifier) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 Slider(
                     value = POO,
-                    onValueChange = { POO = it },
+                    onValueChange = { POO = it.toInt().toFloat()},
                     valueRange = 0f..20f,
-                    steps = 19,
                     modifier = Modifier.weight(2f)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
@@ -184,9 +189,8 @@ fun PantallaRegistro(modifier: Modifier = Modifier) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 Slider(
                     value = PM,
-                    onValueChange = { PM = it },
+                    onValueChange = { PM = it.toInt().toFloat()},
                     valueRange = 0f..20f,
-                    steps = 19,
                     modifier = Modifier.weight(2f)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
@@ -214,9 +218,8 @@ fun PantallaRegistro(modifier: Modifier = Modifier) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 Slider(
                     value = BD,
-                    onValueChange = { BD = it },
+                    onValueChange = { BD = it.toInt().toFloat()},
                     valueRange = 0f..20f,
-                    steps = 19,
                     modifier = Modifier.weight(2f)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
@@ -268,6 +271,28 @@ fun PantallaRegistro(modifier: Modifier = Modifier) {
 
         Button(
             onClick = {
+                promedioPonderado =
+                            (FDP * 0.20) +
+                            (POO * 0.25) +
+                            (PM * 0.30) +
+                            (BD * 0.25)
+                promedioFinal = if (RedondearPromedio) {
+                    promedioPonderado.roundToInt().toDouble()
+                } else {
+                    promedioPonderado
+                }
+                observacion = when {
+                    promedioFinal >= 17 -> "EXCELENTE"
+                    promedioFinal >= 13 -> "APROBADO"
+                    promedioFinal >= 10 -> "EN RECUPERACIÓN"
+                    else -> "DESAPROBADO"
+                }
+                colorObservacion = when {
+                    promedioFinal >= 17 -> Color(0xFF1B5E20)
+                    promedioFinal >= 13 -> Color(0xFF4CAF50)
+                    promedioFinal >= 10 -> Color(0xFFFFC107)
+                    else -> Color(0xFFF44336)
+                }
                 promedioCalculado = true
             },
             enabled = confirmarNotas,
@@ -283,6 +308,46 @@ fun PantallaRegistro(modifier: Modifier = Modifier) {
                 color = MaterialTheme.colorScheme.outline,
                 modifier = Modifier.padding(top = 8.dp)
             )
+        }
+        if (promedioCalculado) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Text(
+                        text = "Promedio ponderado: %.2f".format(promedioPonderado)
+                    )
+                    Text(
+                        text = if (RedondearPromedio) {
+                            "Promedio final: ${promedioFinal.toInt()} (redondeado)"
+                        } else {
+                            "Promedio final: %.2f".format(promedioFinal)
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Surface(
+                        color = colorObservacion,
+                        shape = MaterialTheme.shapes.large
+                    ) {
+                        Text(
+                            text = observacion,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(
+                                horizontal = 12.dp,
+                                vertical = 6.dp
+                            )
+                        )
+                    }
+                }
+            }
         }
     }
 }
