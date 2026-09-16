@@ -1,6 +1,7 @@
 package com.retamozo.carritolazycolumn
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -135,19 +136,93 @@ fun PantallaRegistro(modifier: Modifier = Modifier) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        LazyColumn(
+        if (productos.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Tu carrito está vacío",
+                        color = MaterialTheme.colorScheme.outline
+                    )
+
+                    Text(
+                        text = "Agrega un producto para comenzar",
+                        color = MaterialTheme.colorScheme.outline
+                    )
+                }
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(productos) { producto ->
+
+                    TarjetaProducto(
+                        producto = producto,
+                        onEliminar = {
+                            productos.remove(producto)
+                        }
+                    )
+                }
+            }
+        }
+
+        val subtotal = productos.sumOf { it.precio * it.cantidad }
+        val igv = subtotal * 0.18
+        val total = subtotal + igv
+
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .padding(top = 16.dp)
         ) {
-            items(productos) { producto ->
 
-                TarjetaProducto(
-                    producto = producto,
-                    onEliminar = {
-                        productos.remove(producto)
-                    }
+            Text(
+                text = "Productos: ${productos.size}",
+                style = MaterialTheme.typography.bodyMedium
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text("Subtotal")
+                Text("S/ ${String.format("%.2f", subtotal)}")
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text("IGV (18%)")
+                Text("S/ ${String.format("%.2f", igv)}")
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "TOTAL",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+
+                Text(
+                    text = "S/ ${String.format("%.2f", total)}",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
         }
