@@ -33,18 +33,46 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.retamozo.listadetareas.ui.theme.ListaDeTareasTheme
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.ui.Alignment
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.material3.Surface
+
+val FondoApp = Color(0xFFF1F4F9)
+val AzulMarino = Color(0xFF1D246A)
+val BordeCampo = Color(0xFF7A6FA8)
+val GrisContador = Color(0xFF434448)
+val GrisCheckbox = Color(0xFF3C3C3C)
+
 data class Tarea(
     val id: Int,
     val nombre: String,
     val completada: Boolean = false
 )
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MaterialTheme() {
-                PantallaTareas()
+            MaterialTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = FondoApp
+                ) {
+                    PantallaTareas()
+                }
             }
         }
     }
@@ -57,95 +85,133 @@ fun ItemTarea(
     onCambiarEstado: (Boolean) -> Unit
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp)
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        )
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Row(
-                modifier = Modifier
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.weight(1f)
             ) {
                 Checkbox(
                     checked = tarea.completada,
                     onCheckedChange = {
                         onCambiarEstado(it)
-                    }
+                    },
+                    colors = CheckboxDefaults.colors(
+                        checkedColor = AzulMarino,
+                        uncheckedColor = GrisCheckbox,
+                        checkmarkColor = Color.White
+                    )
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = tarea.nombre,
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(top = 12.dp)
+                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
+                    color = Color(0xFF212121)
                 )
             }
-            Button(onClick = onEliminar) {
-                Text("Eliminar")
-            }
+            Text(
+                text = "🗑️",
+                fontSize = 20.sp,
+                modifier = Modifier.clickable { onEliminar() }
+            )
         }
     }
 }
 
 @Composable
-fun PantallaTareas(){
+fun PantallaTareas() {
     var textoTarea by remember { mutableStateOf("") }
     var contadorld by remember { mutableStateOf(1) }
     val listaTareas = remember { mutableStateListOf<Tarea>() }
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .safeDrawingPadding()
+            .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Lista de tareas",
-            style = MaterialTheme.typography.headlineMedium
+            text = "Lista de tareas - Tecsup",
+            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+            color = AzulMarino,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
         )
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(24.dp))
         OutlinedTextField(
             value = textoTarea,
-            onValueChange = {textoTarea=it},
-            label = {Text("Ingrese una tarea")},
+            onValueChange = { textoTarea = it },
+            label = { Text("¿Qué tarea tienes pendiente?") },
+            shape = RoundedCornerShape(8.dp),
+            singleLine = true,
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = BordeCampo,
+                unfocusedBorderColor = BordeCampo,
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent
+            ),
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(8.dp))
         Button(
             onClick = {
-                if (textoTarea.isNotBlank()){
+                if (textoTarea.isNotBlank()) {
                     listaTareas.add(
                         Tarea(
-                            id=contadorld,
+                            id = contadorld,
                             nombre = textoTarea
                         )
                     )
                     contadorld++
-                    textoTarea=""
+                    textoTarea = ""
                 }
             },
-            modifier = Modifier.fillMaxWidth()
+            shape = RoundedCornerShape(50),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = AzulMarino,
+                contentColor = Color.White
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
         ) {
-            Text("Agrega Tarea")
+            Text("Agregar tarea", fontWeight = FontWeight.Bold)
         }
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(24.dp))
         Text(
-            text = "Total de tareas:${listaTareas.size}",
-            style = MaterialTheme.typography.titleMedium
+            text = "Total de tareas: ${listaTareas.size}",
+            style = MaterialTheme.typography.bodyLarge,
+            color = GrisContador,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
         )
-        Spacer(modifier = Modifier.height(16.dp))
-        LazyColumn{
-            items(listaTareas, key = {it.id}){tarea ->
+        Spacer(modifier = Modifier.height(12.dp))
+        LazyColumn(
+            modifier = Modifier.wrapContentHeight(),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(listaTareas, key = { it.id }) { tarea ->
                 ItemTarea(
-                    tarea=tarea,
+                    tarea = tarea,
                     onEliminar = {
                         listaTareas.remove(tarea)
                     },
-                    onCambiarEstado = {completada ->
+                    onCambiarEstado = { completada ->
                         val index = listaTareas.indexOf(tarea)
-                        if (index!= -1){
-                            listaTareas[index]=listaTareas[index].copy(completada = completada)
+                        if (index != -1) {
+                            listaTareas[index] = listaTareas[index].copy(completada = completada)
                         }
                     }
                 )
