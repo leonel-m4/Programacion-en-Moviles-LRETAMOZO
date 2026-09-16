@@ -5,7 +5,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -38,4 +40,17 @@ fun TemperatureDisplay() {
     Text(
         text = "Temperatura: $temperatura °C"
     )
+    Row {
+        Button(
+            onClick = { temperatura++ }
+        ) {
+            Text("Subir")
+        }
+
+        Button(
+            onClick = { temperatura-- }
+        ) {
+            Text("Bajar")
+        }
+    }
 }
