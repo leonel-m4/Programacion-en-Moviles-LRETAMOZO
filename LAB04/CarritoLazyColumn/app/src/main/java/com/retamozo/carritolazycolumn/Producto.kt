@@ -79,6 +79,20 @@ fun PantallaRegistro(modifier: Modifier = Modifier) {
 
             Spacer(modifier = Modifier.width(16.dp))
 
+            Button(
+                onClick = {
+                    val precioNum = precio.toDoubleOrNull() ?: 0.0
+                    val cantidadNum = cantidad.toIntOrNull() ?: 0
+                    if (nombre.isNotBlank() && precioNum > 0 && cantidadNum > 0) {
+                        productos.add(Producto(nombre, precioNum, cantidadNum))
+                        nombre = ""
+                        precio = ""
+                        cantidad = ""
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) { Text("AGREGAR") }
+
             OutlinedTextField(
                 value = cantidad,
                 onValueChange = { cantidad = it },
@@ -137,3 +151,4 @@ fun PantallaRegistro(modifier: Modifier = Modifier) {
             }
         }
     }
+}
