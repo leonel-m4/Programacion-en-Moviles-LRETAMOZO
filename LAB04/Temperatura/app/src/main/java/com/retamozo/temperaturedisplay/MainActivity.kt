@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.retamozo.temperaturedisplay.ui.theme.TemperatureDisplayTheme
 
@@ -36,9 +37,14 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun TemperatureDisplay() {
     var temperatura by remember { mutableStateOf(20) }
-
+    val colorTemperatura = when {
+        temperatura > 30 -> Color.Red
+        temperatura < 10 -> Color.Blue
+        else -> Color.Black
+    }
     Text(
-        text = "Temperatura: $temperatura °C"
+        text = "Temperatura: $temperatura °C",
+        color = colorTemperatura
     )
     Row {
         Button(
