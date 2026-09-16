@@ -11,18 +11,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -36,13 +40,12 @@ data class Producto(
 @Composable
 fun PantallaRegistro(modifier: Modifier = Modifier) {
 
-    var mostrarResumen by remember { mutableStateOf(false) }
-
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
+
         Text(
             text = "Nuevo producto",
             style = MaterialTheme.typography.headlineSmall
@@ -59,12 +62,17 @@ fun PantallaRegistro(modifier: Modifier = Modifier) {
         var nombre by remember { mutableStateOf("") }
         var precio by remember { mutableStateOf("") }
         var cantidad by remember { mutableStateOf("") }
-        val productos = remember { mutableStateListOf<Producto>() }
+
+        val productos = remember {
+            mutableStateListOf<Producto>()
+        }
 
         OutlinedTextField(
             value = nombre,
             onValueChange = { nombre = it },
-            label = { Text("Nombre del producto") },
+            label = {
+                Text("Nombre del producto")
+            },
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -73,47 +81,24 @@ fun PantallaRegistro(modifier: Modifier = Modifier) {
         Row(
             modifier = Modifier.fillMaxWidth()
         ) {
+
             OutlinedTextField(
                 value = precio,
                 onValueChange = { precio = it },
-                label = { Text("Precio (S/)") },
+                label = {
+                    Text("Precio (S/)")
+                },
                 modifier = Modifier.weight(1f)
             )
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            Button(
-                onClick = {
-                    val precioNum = precio.toDoubleOrNull() ?: 0.0
-                    val cantidadNum = cantidad.toIntOrNull() ?: 0
-                    if (nombre.isNotBlank() && precioNum > 0 && cantidadNum > 0) {
-                        productos.add(Producto(nombre, precioNum, cantidadNum))
-                        nombre = ""
-                        precio = ""
-                        cantidad = ""
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) { Text("AGREGAR") }
-
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(productos) { producto ->
-                    TarjetaProducto(
-                        producto = producto,
-                        onEliminar = { productos.remove(producto) }
-                    )
-                }
-            }
-
             OutlinedTextField(
                 value = cantidad,
                 onValueChange = { cantidad = it },
-                label = { Text("Cantidad") },
+                label = {
+                    Text("Cantidad")
+                },
                 modifier = Modifier.weight(1f)
             )
         }
@@ -122,49 +107,108 @@ fun PantallaRegistro(modifier: Modifier = Modifier) {
 
         Button(
             onClick = {
-                mostrarResumen = true
+                val precioNum = precio.toDoubleOrNull() ?: 0.0
+                val cantidadNum = cantidad.toIntOrNull() ?: 0
+
+                if (
+                    nombre.isNotBlank() &&
+                    precioNum > 0 &&
+                    cantidadNum > 0
+                ) {
+                    productos.add(
+                        Producto(
+                            nombre,
+                            precioNum,
+                            cantidadNum
+                        )
+                    )
+
+                    nombre = ""
+                    precio = ""
+                    cantidad = ""
+                }
             },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("AGREGAR PRODUCTO")
+            Text("AGREGAR")
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-        if (mostrarResumen) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(productos) { producto ->
 
-            val precioNum = precio.toDoubleOrNull() ?: 0.0
-            val cantidadNum = cantidad.toIntOrNull() ?: 0
-            val importe = precioNum * cantidadNum
-
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                TarjetaProducto(
+                    producto = producto,
+                    onEliminar = {
+                        productos.remove(producto)
+                    }
                 )
+            }
+        }
+    }
+}
+
+@Composable
+fun TarjetaProducto(
+    producto: Producto,
+    onEliminar: () -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+
+        Row(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            Column(
+                modifier = Modifier.weight(1f)
             ) {
-                Column(
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    Text(
-                        nombre,
-                        style = MaterialTheme.typography.titleLarge
-                    )
 
-                    Text(
-                        "Precio: S/ " + String.format("%.2f", precioNum)
-                    )
+                Text(
+                    text = producto.nombre,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
 
-                    Text(
-                        "Cantidad: $cantidadNum"
-                    )
+                Text(
+                    text = "S/ ${
+                        String.format(
+                            "%.2f",
+                            producto.precio
+                        )
+                    } x ${producto.cantidad}",
+                    color = MaterialTheme.colorScheme.outline
+                )
+            }
 
-                    Text(
-                        "Importe: S/ " + String.format("%.2f", importe),
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
+            Text(
+                text = "S/ ${
+                    String.format(
+                        "%.2f",
+                        producto.precio * producto.cantidad
                     )
-                }
+                }",
+                fontWeight = FontWeight.Bold
+            )
+
+            IconButton(
+                onClick = onEliminar
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Eliminar",
+                    tint = MaterialTheme.colorScheme.error
+                )
             }
         }
     }
