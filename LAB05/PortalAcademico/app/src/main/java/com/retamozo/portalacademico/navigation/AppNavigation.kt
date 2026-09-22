@@ -7,8 +7,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.retamozo.portalacademico.screens.DetailScreen
 import com.retamozo.portalacademico.screens.HomeScreen
 import com.retamozo.portalacademico.screens.ListScreen
+import com.retamozo.portalacademico.screens.ProfileScreen
 
 @Composable
 fun AppNavigation(){
