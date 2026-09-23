@@ -8,25 +8,44 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.EventBusy
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.retamozo.tecsupfit.components.StatusBadge
 import com.retamozo.tecsupfit.data.Reservation
 import com.retamozo.tecsupfit.data.ReservationRepository
+import com.retamozo.tecsupfit.navigation.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ReservationsScreen() {
+fun ReservationsScreen(navController: NavController? = null) {
     val reservas = ReservationRepository.reservas
     var showDialog by remember { mutableStateOf(false) }
     var reservaSeleccionada by remember { mutableStateOf<Reservation?>(null) }
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Mis reservas", fontWeight = FontWeight.Bold) }) },
+        topBar = {
+            TopAppBar(
+                title = { Text("Mis reservas", fontWeight = FontWeight.Bold) },
+                navigationIcon = {
+                    if (navController != null) {
+                        IconButton(onClick = {
+                            navController.navigate(Screen.Home.route) {
+                                popUpTo(Screen.Home.route) { inclusive = true }
+                                launchSingleTop = true
+                            }
+                        }) {
+                            Icon(Icons.Default.Home, contentDescription = "Volver al inicio", tint = MaterialTheme.colorScheme.primary)
+                        }
+                    }
+                }
+            )
+        },
         modifier = Modifier.navigationBarsPadding()
     ) { padding ->
         if (reservas.isEmpty()) {

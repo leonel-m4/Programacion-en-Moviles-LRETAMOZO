@@ -40,7 +40,7 @@ fun AppNavigation() {
                 HomeScreen(navController = navController)
             }
             composable(Screen.Reservations.route) {
-                ReservationsScreen()
+                ReservationsScreen(navController = navController)
             }
             composable(Screen.Routines.route) {
                 RoutinesScreen()
