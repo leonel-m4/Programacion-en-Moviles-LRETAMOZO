@@ -70,7 +70,6 @@ Este documento registra cronológicamente las iteraciones, prompts y decisiones 
     - Cuadrícula de estadísticas de rendimiento de 4 métricas clave: Clases asistidas, Racha actual, Calorías quemadas (Kcal) y Tiempo activo.
     - Sección completa de **Insignias y Logros** con iconos distintivos y descripciones de hitos completados ("Madrugador Fit", "Constancia de Acero", "Cross Trainer Pro").
     - Sección de **Preferencias de la cuenta** con controles interactivos (`Switch`) para notificaciones de clases y modo oscuro forzado.
-    - Botón de cierre de sesión con estilo destructivo y icono adaptativo.
   - **Ajustes de Navegación**: Validación rigurosa del flujo de retorno a `Home` desde `ConfirmationScreen` mediante `popUpTo(Screen.Home.route) { inclusive = false }`.
 - **Verificación y pruebas**:
   - Compilación exitosa de Gradle (`app:assembleDebug`).
@@ -91,3 +90,19 @@ Este documento registra cronológicamente las iteraciones, prompts y decisiones 
   - Sincronización Gradle exitosa (`gradle_sync`).
   - Compilación exitosa de Gradle (`app:assembleDebug`).
   - Commit asociado: `git commit -m "feat(profile & navigation): integrar fotografias reales con coil, eliminar cerrar sesion y asegurar retorno a inicio post-reserva"`
+
+---
+
+## Iteración 7: Solución Crítica de Permisos, Fotografías Inmersivas en Clases y Rutinas Avanzadas
+
+- **Objetivo del prompt**: Solucionar el cierre forzado (crash) por falta de permisos de red al cargar imágenes remotas, enriquecer las tarjetas de clases con fotografías reales de instructores y transformar la sección de rutinas con imágenes y calorías detalladas para cumplir con los más altos estándares de producción.
+- **Análisis de limitaciones previas**:
+  - La aplicación carecía del permiso `android.permission.INTERNET` en el `AndroidManifest.xml`, lo que provocaba cierres inesperados al intentar cargar avatares e imágenes con Coil.
+  - Las tarjetas de clases y la pantalla de rutinas necesitaban un nivel visual superior con fotografías de alta calidad, nombres de instructores y métricas de quema calórica.
+- **Implementación**:
+  - **Permisos AndroidManifest**: Inserción obligatoria de `<uses-permission android:name="android.permission.INTERNET" />` y `<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />`.
+  - **Clases y Repositorios Enriquecidos**: Actualización de `FitClass` y `ClassRepository` para incluir nombres y fotos de instructores profesionales (`Carlos Mendoza`, `Lucía Fernández`, etc.).
+  - **Rutinas Avanzadas (`RoutinesScreen`)**: Rediseño total con tarjetas con imágenes de alta resolución de entrenamiento (`AsyncImage`), duración, niveles, conteo de ejercicios y quema de calorías (`kcal`).
+- **Verificación y pruebas**:
+  - Compilación y ensamblaje exitoso (`app:assembleDebug`) sin errores.
+  - Commit asociado: `git commit -m "feat(advanced & permissions): agregar permiso de internet, imagenes reales con coil en tarjetas y rutinas avanzadas"`
