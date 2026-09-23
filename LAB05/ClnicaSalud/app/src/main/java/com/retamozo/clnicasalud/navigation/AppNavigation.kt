@@ -58,7 +58,10 @@ fun AppNavigation() {
             }
 
             composable(Screen.MyAppointments.route) {
-                MyAppointmentsScreen(onMenuClick = { scope.launch { drawerState.open() } })
+                MyAppointmentsScreen(
+                    navController = navController,
+                    onMenuClick = { scope.launch { drawerState.open() } }
+                )
             }
 
             composable(Screen.MedicalHistory.route) {

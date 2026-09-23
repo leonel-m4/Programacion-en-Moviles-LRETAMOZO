@@ -6,26 +6,36 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.retamozo.clnicasalud.components.StatusBadge
 import com.retamozo.clnicasalud.data.Appointment
 import com.retamozo.clnicasalud.data.AppointmentRepository
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyAppointmentsScreen(onMenuClick: () -> Unit) {
+fun MyAppointmentsScreen(navController: NavController, onMenuClick: () -> Unit) {
+    val canGoBack = navController.previousBackStackEntry != null
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Mis citas") },
                 navigationIcon = {
-                    IconButton(onClick = onMenuClick) {
-                        Icon(Icons.Default.Menu, contentDescription = "Menú")
+                    IconButton(onClick = {
+                        if (canGoBack) navController.popBackStack() else onMenuClick()
+                    }) {
+                        if (canGoBack) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
+                        } else {
+                            Icon(Icons.Default.Menu, contentDescription = "Menú")
+                        }
                     }
                 }
             )
