@@ -61,7 +61,7 @@ fun ReservationsScreen() {
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(reservas, key = { "${it.claseNombre}-${it.fecha}-${it.hora}" }) { reserva ->
+                items(reservas, key = { it.id }) { reserva ->
                     ReservationCard(
                         reserva = reserva,
                         onCancelClick = {

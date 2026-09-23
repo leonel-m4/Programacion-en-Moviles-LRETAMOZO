@@ -21,7 +21,7 @@ object ReservationRepository {
     )
 
     fun reservar(claseNombre: String, hora: String, sala: String) {
-        reservas.add(0, Reservation(claseNombre, "Hoy", hora, sala, "Confirmada"))
+        reservas.add(0, Reservation(claseNombre = claseNombre, fecha = "Hoy", hora = hora, sala = sala, estado = "Confirmada"))
     }
 
     fun cancelarReserva(reservation: Reservation) {
