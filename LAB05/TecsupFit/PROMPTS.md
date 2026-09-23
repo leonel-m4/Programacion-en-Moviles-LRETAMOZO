@@ -53,7 +53,25 @@ Este documento registra cronológicamente las iteraciones, prompts y decisiones 
 - **Implementación**:
   - Traslado de la lógica de reserva y decremento de cupos (`ClassRepository.decrementarCupo`) al evento del botón "Reservar cupo" en `ClassDetailScreen`.
   - Eliminación del `LaunchedEffect` en `ConfirmationScreen`.
-  - Incorporación de dos opciones claras en `ConfirmationScreen`: **"Volver al inicio"** (limpiando el stack de navegación con `popUpTo(Screen.Home.route) { inclusive = true }`) y **"Ver mis reservas"**.
+  - Incorporación de dos opciones claras en `ConfirmationScreen`: **"Volver al inicio"** (limpiando el stack de navegación con `popUpTo(Screen.Home.route) { inclusive = false }`) y **"Ver mis reservas"**.
 - **Verificación y pruebas**:
   - Compilación exitosa de Gradle (`app:assembleDebug`).
   - Commit asociado: `git commit -m "fix(navigation): corregir flujo de reserva, evitar duplicados y habilitar retorno al inicio"`
+
+---
+
+## Iteración 5: Overhaul Extremo del Perfil & Máxima Exigencia UI/UX
+
+- **Objetivo del prompt**: Llevar la aplicación al límite de su diseño y funcionalidad ("llevar la app al límite"), transformando radicalmente la pantalla de perfil e introduciendo métricas avanzadas, insignias de logros, preferencias interactivas y asegurando que la navegación de retorno al inicio sea impecable.
+- **Análisis de limitaciones previas**: La pantalla de perfil era demasiado simple y básica (solo un avatar con dos tarjetas de estadísticas), lo que no cumplía con los estándares de un producto de alta gama ni con las expectativas de un overhaul completo.
+- **Implementación**:
+  - **Overhaul de `ProfileScreen`**:
+    - Tarjeta de perfil principal con avatar circular de alto contraste ("DR"), correo institucional y badge de "Miembro Premium Pro".
+    - Cuadrícula de estadísticas de rendimiento de 4 métricas clave: Clases asistidas, Racha actual, Calorías quemadas (Kcal) y Tiempo activo.
+    - Sección completa de **Insignias y Logros** con iconos distintivos y descripciones de hitos completados ("Madrugador Fit", "Constancia de Acero", "Cross Trainer Pro").
+    - Sección de **Preferencias de la cuenta** con controles interactivos (`Switch`) para notificaciones de clases y modo oscuro forzado.
+    - Botón de cierre de sesión con estilo destructivo y icono adaptativo.
+  - **Ajustes de Navegación**: Validación rigurosa del flujo de retorno a `Home` desde `ConfirmationScreen` mediante `popUpTo(Screen.Home.route) { inclusive = false }`.
+- **Verificación y pruebas**:
+  - Compilación exitosa de Gradle (`app:assembleDebug`).
+  - Commit asociado: `git commit -m "feat(profile & navigation): overhaul total de perfil con estadisticas e insignias, y solucion definitiva de navegacion a inicio"`
