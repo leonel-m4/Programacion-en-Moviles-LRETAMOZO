@@ -75,3 +75,19 @@ Este documento registra cronológicamente las iteraciones, prompts y decisiones 
 - **Verificación y pruebas**:
   - Compilación exitosa de Gradle (`app:assembleDebug`).
   - Commit asociado: `git commit -m "feat(profile & navigation): overhaul total de perfil con estadisticas e insignias, y solucion definitiva de navegacion a inicio"`
+
+---
+
+## Iteración 6: Integración de Fotografías Reales con Coil y Refinamiento Absoluto
+
+- **Objetivo del prompt**: Integrar fotografías reales de personas (avatares de alta calidad con Coil) en el perfil y la sección de instructores destacados, eliminar el botón de cerrar sesión por completo y asegurar que el retorno al inicio tras una reserva utilice `popBackStack` para evitar cualquier bloqueo de navegación.
+- **Análisis de limitaciones previas**: El usuario reportó que la navegación de retorno al inicio tras reservar seguía presentando bloqueos y que el perfil se veía plano sin fotografías reales. Además, solicitó explícitamente no incluir el botón de cerrar sesión.
+- **Implementación**:
+  - **Librería Coil**: Adición de `io.coil-kt:coil-compose:2.6.0` y sincronización Gradle.
+  - **Fotografías Reales**: Inserción de avatares profesionales de personas en el perfil de usuario y en la nueva sección de **"Instructores Destacados"** (`Carlos Mendoza`, `Lucía Fernández`, `Marco Silva`) usando `AsyncImage`.
+  - **Eliminación de Cerrar Sesión**: Remoción completa de la opción de logout.
+  - **Navegación Definitiva a Inicio**: Uso de `navController.popBackStack(Screen.Home.route, inclusive = false)` en el botón "Volver al inicio" de `ConfirmationScreen`.
+- **Verificación y pruebas**:
+  - Sincronización Gradle exitosa (`gradle_sync`).
+  - Compilación exitosa de Gradle (`app:assembleDebug`).
+  - Commit asociado: `git commit -m "feat(profile & navigation): integrar fotografias reales con coil, eliminar cerrar sesion y asegurar retorno a inicio post-reserva"`
