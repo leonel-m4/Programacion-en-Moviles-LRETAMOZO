@@ -120,3 +120,17 @@ Este documento registra cronológicamente las iteraciones, prompts y decisiones 
 - **Verificación y pruebas**:
   - Compilación y ensamblaje exitoso (`app:assembleDebug`) sin errores.
   - Commit asociado: `git commit -m "fix(crash): agregar IDs unicos UUID a reservas para evitar crash de duplicate keys en LazyColumn al ver mis reservas"`
+
+---
+
+## Iteración 9: Botón Explícito de Inicio en TopAppBar de Mis Reservas
+
+- **Objetivo del prompt**: Garantizar que el usuario nunca quede atrapado sin poder volver al inicio cuando se encuentra visualizando la pantalla de "Mis reservas".
+- **Análisis de limitaciones previas**:
+  - Al navegar desde la confirmación a "Mis reservas", el usuario requería un acceso directo y evidente hacia la pantalla principal (`Home`), sin depender únicamente de la barra inferior o gestos del sistema.
+- **Implementación**:
+  - Incorporación de un botón de navegación (`navigationIcon`) con un icono de **Inicio (`Home`)** en el `TopAppBar` de `ReservationsScreen`.
+  - Al presionarlo, ejecuta un `navController.navigate(Screen.Home.route)` limpiando el stack de forma limpia.
+- **Verificación y pruebas**:
+  - Compilación y ensamblaje exitoso (`app:assembleDebug`) sin errores.
+  - Commit asociado: `git commit -m "fix(navigation): agregar boton explicitico de inicio (Home) en la TopAppBar de Mis Reservas para garantizar retorno al inicio sin bloqueos"`
