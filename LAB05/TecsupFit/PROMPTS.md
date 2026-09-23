@@ -106,3 +106,17 @@ Este documento registra cronológicamente las iteraciones, prompts y decisiones 
 - **Verificación y pruebas**:
   - Compilación y ensamblaje exitoso (`app:assembleDebug`) sin errores.
   - Commit asociado: `git commit -m "feat(advanced & permissions): agregar permiso de internet, imagenes reales con coil en tarjetas y rutinas avanzadas"`
+
+---
+
+## Iteración 8: Solución Definitiva de Crash por Claves Duplicadas en `LazyColumn` (Ver Mis Reservas)
+
+- **Objetivo del prompt**: Corregir el cierre forzado (crash) exacto que ocurría al hacer clic en el botón "Ver mis reservas" tras realizar una reserva.
+- **Análisis de limitaciones previas**:
+  - Al renderizar `ReservationsScreen`, el componente `LazyColumn` utilizaba claves compuestas (`key = { "${it.claseNombre}-${it.fecha}-${it.hora}" }`). Si se añadía una reserva con la misma clase y hora, se producía una excepción de clave duplicada (`IllegalArgumentException`), sacando al usuario de la aplicación.
+- **Implementación**:
+  - Inserción de un campo `id: String = UUID.randomUUID().toString()` en el modelo de datos `Reservation`.
+  - Actualización de `ReservationsScreen` para utilizar `key = { it.id }` en el `LazyColumn`, garantizando unicidad absoluta y estabilidad en las listas reactivas.
+- **Verificación y pruebas**:
+  - Compilación y ensamblaje exitoso (`app:assembleDebug`) sin errores.
+  - Commit asociado: `git commit -m "fix(crash): agregar IDs unicos UUID a reservas para evitar crash de duplicate keys en LazyColumn al ver mis reservas"`
