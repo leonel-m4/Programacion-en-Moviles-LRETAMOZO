@@ -51,10 +51,7 @@ fun ConfirmationScreen(navController: NavController, classId: Int) {
 
             Button(
                 onClick = {
-                    navController.navigate(Screen.Home.route) {
-                        popUpTo(Screen.Home.route) { inclusive = false }
-                        launchSingleTop = true
-                    }
+                    navController.popBackStack(Screen.Home.route, inclusive = false)
                 },
                 modifier = Modifier.fillMaxWidth().height(50.dp),
                 shape = RoundedCornerShape(12.dp)
