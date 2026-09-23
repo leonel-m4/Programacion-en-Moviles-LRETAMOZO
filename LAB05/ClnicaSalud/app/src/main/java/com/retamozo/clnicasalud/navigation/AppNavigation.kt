@@ -14,14 +14,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.retamozo.clinicasalud.components.AppDrawerContent
-import com.retamozo.clinicasalud.screens.BookAppointmentScreen
-import com.retamozo.clinicasalud.screens.ConfirmationScreen
-import com.retamozo.clinicasalud.screens.DoctorProfileScreen
-import com.retamozo.clinicasalud.screens.HomeScreen
-import com.retamozo.clinicasalud.screens.MedicalHistoryScreen
-import com.retamozo.clinicasalud.screens.MyAppointmentsScreen
-import com.retamozo.clinicasalud.screens.ProfileScreen
+import com.retamozo.clnicasalud.components.AppDrawerContent
+import com.retamozo.clnicasalud.screens.BookAppointmentScreen
+import com.retamozo.clnicasalud.screens.ConfirmationScreen
+import com.retamozo.clnicasalud.screens.DoctorProfileScreen
+import com.retamozo.clnicasalud.screens.HomeScreen
+import com.retamozo.clnicasalud.screens.MedicalHistoryScreen
+import com.retamozo.clnicasalud.screens.MyAppointmentsScreen
+import com.retamozo.clnicasalud.screens.ProfileScreen
 import kotlinx.coroutines.launch
 
 @Composable
