@@ -25,7 +25,7 @@ fun ClassDetailScreen(navController: NavController, classId: Int) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Detalle de clase") },
+                title = { Text("Detalle de clase", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
@@ -34,39 +34,68 @@ fun ClassDetailScreen(navController: NavController, classId: Int) {
             )
         },
         bottomBar = {
-            Button(
-                onClick = { navController.navigate(Screen.Confirmation.createRoute(fitClass.id)) },
-                modifier = Modifier.fillMaxWidth().padding(16.dp)
+            Surface(
+                tonalElevation = 8.dp,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Reservar cupo")
+                Box(modifier = Modifier.navigationBarsPadding().padding(16.dp)) {
+                    Button(
+                        onClick = { navController.navigate(Screen.Confirmation.createRoute(fitClass.id)) },
+                        modifier = Modifier.fillMaxWidth().height(50.dp),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text("Reservar cupo", style = MaterialTheme.typography.titleMedium)
+                    }
+                }
             }
         }
     ) { padding ->
-        Column(modifier = Modifier.padding(padding).padding(24.dp)) {
+        Column(
+            modifier = Modifier.padding(padding).fillMaxSize().padding(24.dp)
+        ) {
             Box(
-                modifier = Modifier.fillMaxWidth().height(100.dp).clip(RoundedCornerShape(16.dp))
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(140.dp)
+                    .clip(RoundedCornerShape(16.dp))
                     .background(MaterialTheme.colorScheme.primaryContainer),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    Icons.Default.FitnessCenter, contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(40.dp)
+                    Icons.Default.FitnessCenter,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(56.dp)
                 )
             }
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(fitClass.nombre, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(20.dp))
+            Text(fitClass.nombre, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(8.dp))
             Text(
                 "${fitClass.hora} · ${fitClass.sala} · ${fitClass.duracionMin} min",
+                style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(fitClass.descripcion)
             Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                "${fitClass.cuposDisponibles} de ${fitClass.cuposTotales} cupos disponibles",
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.primary
-            )
+            Text(fitClass.descripcion, style = MaterialTheme.typography.bodyMedium)
+            Spacer(modifier = Modifier.height(24.dp))
+            Card(
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Cupos disponibles", fontWeight = FontWeight.Medium)
+                    Text(
+                        "${fitClass.cuposDisponibles} / ${fitClass.cuposTotales}",
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
         }
     }
 }
