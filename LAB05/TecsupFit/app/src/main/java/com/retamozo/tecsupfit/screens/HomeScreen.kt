@@ -18,7 +18,7 @@ import com.retamozo.tecsupfit.navigation.Screen
 @Composable
 fun HomeScreen(navController: NavController) {
     var filtroSeleccionado by remember { mutableStateOf("Hoy") }
-    val filtros = listOf("Hoy", "Esta semana")
+    val filtros = listOf("Hoy", "Mañana", "Esta semana")
 
     Scaffold(
         topBar = {
@@ -26,13 +26,15 @@ fun HomeScreen(navController: NavController) {
                 title = {
                     Column {
                         Text("TECSUP Fit", fontWeight = FontWeight.Bold)
-                        Text("Hola, Diego", style = MaterialTheme.typography.bodySmall)
+                        Text("Bienvenido, Diego", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
             )
-        }
+        },
+        modifier = Modifier.navigationBarsPadding()
     ) { padding ->
-        Column(modifier = Modifier.padding(padding)) {
+        Column(modifier = Modifier.padding(padding).fillMaxSize()) {
+            Spacer(modifier = Modifier.height(8.dp))
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -50,6 +52,7 @@ fun HomeScreen(navController: NavController) {
 
             Text(
                 "Clases disponibles",
+                style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
@@ -57,7 +60,7 @@ fun HomeScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(8.dp))
 
             LazyColumn(
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(ClassRepository.clases) { fitClass ->
