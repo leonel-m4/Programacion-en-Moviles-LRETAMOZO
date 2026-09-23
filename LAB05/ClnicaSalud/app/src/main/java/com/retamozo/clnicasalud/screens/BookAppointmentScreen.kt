@@ -1,6 +1,7 @@
 package com.retamozo.clnicasalud.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
@@ -23,30 +24,49 @@ fun BookAppointmentScreen(navController: NavController, doctorId: Int) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Agendar cita") },
+                title = { Text("Agendar cita", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer
+                )
             )
         },
         bottomBar = {
-            Button(
-                onClick = {
-                    navController.navigate(
-                        Screen.Confirmation.createRoute(doctorId, selectedDateIndex, selectedTimeIndex)
-                    )
-                },
-                modifier = Modifier.fillMaxWidth().padding(16.dp)
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .navigationBarsPadding(),
+                tonalElevation = 8.dp,
+                color = MaterialTheme.colorScheme.surface
             ) {
-                Text("Confirmar cita")
+                Button(
+                    onClick = {
+                        navController.navigate(
+                            Screen.Confirmation.createRoute(doctorId, selectedDateIndex, selectedTimeIndex)
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    shape = RoundedCornerShape(14.dp)
+                ) {
+                    Text("Confirmar cita", fontWeight = FontWeight.Bold)
+                }
             }
         }
     ) { padding ->
-        Column(modifier = Modifier.padding(padding).padding(24.dp)) {
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
+                .padding(24.dp)
+        ) {
             Text("Selecciona fecha", fontWeight = FontWeight.Bold)
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 dateOptions.forEachIndexed { index, option ->
                     SelectableChip(selected = selectedDateIndex == index, onClick = { selectedDateIndex = index }) {
@@ -56,10 +76,10 @@ fun BookAppointmentScreen(navController: NavController, doctorId: Int) {
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(28.dp))
 
             Text("Selecciona hora", fontWeight = FontWeight.Bold)
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 timeOptions.forEachIndexed { index, option ->
                     SelectableChip(selected = selectedTimeIndex == index, onClick = { selectedTimeIndex = index }) {
