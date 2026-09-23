@@ -15,6 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.retamozo.tecsupfit.data.ClassRepository
+import com.retamozo.tecsupfit.data.ReservationRepository
 import com.retamozo.tecsupfit.navigation.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,7 +41,13 @@ fun ClassDetailScreen(navController: NavController, classId: Int) {
             ) {
                 Box(modifier = Modifier.navigationBarsPadding().padding(16.dp)) {
                     Button(
-                        onClick = { navController.navigate(Screen.Confirmation.createRoute(fitClass.id)) },
+                        onClick = {
+                            ReservationRepository.reservar(fitClass.nombre, fitClass.hora, fitClass.sala)
+                            ClassRepository.decrementarCupo(fitClass.id)
+                            navController.navigate(Screen.Confirmation.createRoute(fitClass.id)) {
+                                popUpTo(Screen.ClassDetail.createRoute(fitClass.id)) { inclusive = true }
+                            }
+                        },
                         modifier = Modifier.fillMaxWidth().height(50.dp),
                         shape = RoundedCornerShape(12.dp)
                     ) {

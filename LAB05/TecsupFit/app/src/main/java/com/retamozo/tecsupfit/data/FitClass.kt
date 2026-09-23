@@ -7,6 +7,6 @@ data class FitClass(
     val sala: String,
     val duracionMin: Int,
     val descripcion: String,
-    val cuposDisponibles: Int,
+    var cuposDisponibles: Int,
     val cuposTotales: Int
 )

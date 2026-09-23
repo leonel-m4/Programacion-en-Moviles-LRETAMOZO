@@ -35,4 +35,11 @@ object ClassRepository {
     )
 
     fun getById(id: Int): FitClass = clases.first { it.id == id }
+
+    fun decrementarCupo(id: Int) {
+        val clase = clases.find { it.id == id }
+        if (clase != null && clase.cuposDisponibles > 0) {
+            clase.cuposDisponibles--
+        }
+    }
 }
