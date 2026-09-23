@@ -8,5 +8,8 @@ data class FitClass(
     val duracionMin: Int,
     val descripcion: String,
     var cuposDisponibles: Int,
-    val cuposTotales: Int
+    val cuposTotales: Int,
+    val instructorNombre: String,
+    val instructorFotoUrl: String,
+    val categoria: String
 )

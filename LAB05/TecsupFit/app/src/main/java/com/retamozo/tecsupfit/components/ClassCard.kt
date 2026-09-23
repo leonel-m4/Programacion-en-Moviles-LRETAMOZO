@@ -6,15 +6,16 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.retamozo.tecsupfit.data.FitClass
 
 @Composable
@@ -31,16 +32,16 @@ fun ClassCard(fitClass: FitClass, onClick: () -> Unit) {
         ) {
             Box(
                 modifier = Modifier
-                    .size(48.dp)
+                    .size(52.dp)
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.primaryContainer),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    Icons.Default.FitnessCenter,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(24.dp)
+                AsyncImage(
+                    model = fitClass.instructorFotoUrl,
+                    contentDescription = fitClass.instructorNombre,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
                 )
             }
             Spacer(modifier = Modifier.width(16.dp))
@@ -49,6 +50,13 @@ fun ClassCard(fitClass: FitClass, onClick: () -> Unit) {
                     fitClass.nombre,
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleMedium
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    "Prof. ${fitClass.instructorNombre}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Medium
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -61,7 +69,7 @@ fun ClassCard(fitClass: FitClass, onClick: () -> Unit) {
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         "${fitClass.hora} · ${fitClass.sala} (${fitClass.duracionMin} min)",
-                        style = MaterialTheme.typography.bodyMedium,
+                        style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
