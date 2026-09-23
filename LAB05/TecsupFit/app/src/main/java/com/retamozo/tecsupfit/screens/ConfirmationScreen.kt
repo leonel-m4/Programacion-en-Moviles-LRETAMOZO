@@ -25,8 +25,7 @@ fun ConfirmationScreen(navController: NavController, classId: Int) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Confirmación", fontWeight = FontWeight.Bold) },
-                navigationIcon = {}
+                title = { Text("Confirmación", fontWeight = FontWeight.Bold) }
             )
         },
         modifier = Modifier.navigationBarsPadding()
@@ -53,7 +52,7 @@ fun ConfirmationScreen(navController: NavController, classId: Int) {
             Button(
                 onClick = {
                     navController.navigate(Screen.Home.route) {
-                        popUpTo(Screen.Home.route) { inclusive = true }
+                        popUpTo(Screen.Home.route) { inclusive = false }
                         launchSingleTop = true
                     }
                 },
