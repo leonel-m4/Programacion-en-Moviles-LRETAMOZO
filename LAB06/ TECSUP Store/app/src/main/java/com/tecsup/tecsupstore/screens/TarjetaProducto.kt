@@ -1,5 +1,6 @@
 package com.tecsup.tecsupstore.screens
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,6 +10,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -66,16 +69,54 @@ fun TarjetaProducto(
                 )
             }
 
-            IconButton(
-                onClick = {
-                    expandido = true
-                }
-            ) {
+            Box {
 
-                Icon(
-                    imageVector = Icons.Default.MoreVert,
-                    contentDescription = "Opciones"
-                )
+                IconButton(
+                    onClick = {
+                        expandido = true
+                    }
+                ) {
+
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = "Opciones"
+                    )
+                }
+
+                DropdownMenu(
+                    expanded = expandido,
+                    onDismissRequest = {
+                        expandido = false
+                    }
+                ) {
+
+                    DropdownMenuItem(
+                        text = {
+                            Text("Favoritos")
+                        },
+                        onClick = {
+                            expandido = false
+                        }
+                    )
+
+                    DropdownMenuItem(
+                        text = {
+                            Text("Compartir")
+                        },
+                        onClick = {
+                            expandido = false
+                        }
+                    )
+
+                    DropdownMenuItem(
+                        text = {
+                            Text("Reportar")
+                        },
+                        onClick = {
+                            expandido = false
+                        }
+                    )
+                }
             }
         }
     }
