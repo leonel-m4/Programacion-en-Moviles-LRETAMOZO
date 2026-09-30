@@ -17,6 +17,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.tecsup.tecsupstore.screens.PantallaInicio
 import kotlinx.coroutines.launch
@@ -43,14 +45,27 @@ fun AppNavegacion() {
 
     val scope = rememberCoroutineScope()
 
+    val entradaActual by
+    navController.currentBackStackEntryAsState()
+
+    val rutaActual =
+        entradaActual?.destination?.route
+            ?: Pantalla.Inicio.ruta
+
     ModalNavigationDrawer(
         drawerState = estadoDrawer,
         drawerContent = {
 
             CajonNavegacion(
+                rutaActual = rutaActual,
                 onOpcionSeleccionada = { ruta ->
 
                     navController.navigate(ruta) {
+
+                        popUpTo(
+                            Pantalla.Inicio.ruta
+                        )
+
                         launchSingleTop = true
                     }
 
