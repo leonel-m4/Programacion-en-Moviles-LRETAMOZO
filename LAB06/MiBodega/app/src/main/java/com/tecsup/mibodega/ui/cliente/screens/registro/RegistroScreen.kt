@@ -35,7 +35,6 @@ import androidx.compose.ui.unit.dp
 import com.tecsup.mibodega.ui.componentes.BotonPrimario
 import com.tecsup.mibodega.ui.componentes.CampoTexto
 import com.tecsup.mibodega.ui.theme.BodegaTheme
-import com.tecsup.mibodega.ui.theme.GrisClaro
 import com.tecsup.mibodega.ui.theme.VerdeBodega
 
 /**
@@ -52,6 +51,7 @@ fun RegistroScreen(
     var telefono by remember { mutableStateOf("") }
     var direccion by remember { mutableStateOf("") }
     var referencia by remember { mutableStateOf("") }
+    var mostrarErrores by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -74,7 +74,7 @@ fun RegistroScreen(
                 tint = VerdeBodega,
                 modifier = Modifier
                     .size(84.dp)
-                    .background(GrisClaro, CircleShape)
+                    .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape)
                     .padding(4.dp)
             )
         }
@@ -85,7 +85,8 @@ fun RegistroScreen(
             etiqueta = "Nombre completo",
             valor = nombre,
             onValorCambia = { nombre = it },
-            placeholder = "Juan Pérez"
+            placeholder = "Juan Pérez",
+            esError = mostrarErrores && nombre.isBlank()
         )
         Spacer(Modifier.height(16.dp))
 
@@ -94,7 +95,8 @@ fun RegistroScreen(
             valor = telefono,
             onValorCambia = { telefono = it },
             placeholder = "987 654 321",
-            teclado = KeyboardType.Phone
+            teclado = KeyboardType.Phone,
+            esError = mostrarErrores && telefono.isBlank()
         )
         Spacer(Modifier.height(16.dp))
 
@@ -102,7 +104,8 @@ fun RegistroScreen(
             etiqueta = "Dirección de entrega",
             valor = direccion,
             onValorCambia = { direccion = it },
-            placeholder = "Av. Los Olivos 123"
+            placeholder = "Av. Los Olivos 123",
+            esError = mostrarErrores && direccion.isBlank()
         )
         Spacer(Modifier.height(16.dp))
 
@@ -110,14 +113,28 @@ fun RegistroScreen(
             etiqueta = "Referencia",
             valor = referencia,
             onValorCambia = { referencia = it },
-            placeholder = "Frente al parque"
+            placeholder = "Frente al parque",
+            esError = mostrarErrores && referencia.isBlank()
         )
+
+        if (mostrarErrores && listOf(nombre, telefono, direccion, referencia).any { it.isBlank() }) {
+            Spacer(Modifier.height(8.dp))
+            Text(
+                text = "Completa todos los campos para continuar",
+                color = MaterialTheme.colorScheme.error
+            )
+        }
 
         Spacer(Modifier.height(28.dp))
 
         BotonPrimario(
             texto = "Crear cuenta",
-            onClick = { onCrearCuenta(nombre, telefono, direccion, referencia) }
+            onClick = {
+                mostrarErrores = true
+                if (listOf(nombre, telefono, direccion, referencia).all { it.isNotBlank() }) {
+                    onCrearCuenta(nombre, telefono, direccion, referencia)
+                }
+            }
         )
 
         Spacer(Modifier.height(24.dp))
