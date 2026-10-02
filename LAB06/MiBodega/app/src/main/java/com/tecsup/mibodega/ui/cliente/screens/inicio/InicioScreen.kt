@@ -17,8 +17,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.Search
@@ -50,7 +50,6 @@ import com.tecsup.mibodega.ui.cliente.modelo.listaCategorias
 import com.tecsup.mibodega.ui.cliente.modelo.listaProductosFake
 import com.tecsup.mibodega.ui.componentes.ProductoCard
 import com.tecsup.mibodega.ui.theme.BodegaTheme
-import com.tecsup.mibodega.ui.theme.GrisClaro
 import com.tecsup.mibodega.ui.theme.VerdeBodega
 
 /**
@@ -66,17 +65,31 @@ import com.tecsup.mibodega.ui.theme.VerdeBodega
 fun InicioScreen(
     productos: List<Producto> = listaProductosFake,
     cantidadCarrito: Int,
+    favoritos: Set<Int>,
     onVerCarrito: () -> Unit,
+    onVerPedidos: () -> Unit,
+    onVerFavoritos: () -> Unit,
+    onVerPerfil: () -> Unit,
     onProductoClick: (Producto) -> Unit,
-    onAgregarProducto: (Producto) -> Unit
+    onAgregarProducto: (Producto) -> Unit,
+    onFavoritoClick: (Producto) -> Unit
 ) {
     var categoriaSeleccionada by remember { mutableStateOf(listaCategorias.first()) }
     var textoBusqueda by remember { mutableStateOf("") }
+    var ordenPrecio by remember { mutableStateOf("Normal") }
 
-    val productosFiltrados = productos.filter { producto ->
-        val coincideCategoria = categoriaSeleccionada == "Todos" || producto.categoria == categoriaSeleccionada
-        coincideCategoria
-    }
+    val productosFiltrados = productos
+        .filter { producto ->
+            val coincideCategoria = categoriaSeleccionada == "Todos" || producto.categoria == categoriaSeleccionada
+            coincideCategoria
+        }
+        .let { lista ->
+            when (ordenPrecio) {
+                "Menor" -> lista.sortedBy { it.precio }
+                "Mayor" -> lista.sortedByDescending { it.precio }
+                else -> lista
+            }
+        }
 
     Scaffold(
         topBar = {
@@ -100,7 +113,9 @@ fun InicioScreen(
         bottomBar = {
             BarraInferior(
                 cantidadCarrito = cantidadCarrito,
-                onPedidosClick = onVerCarrito
+                onPedidosClick = onVerPedidos,
+                onFavoritosClick = onVerFavoritos,
+                onPerfilClick = onVerPerfil
             )
         }
     ) { paddingInterno ->
@@ -121,8 +136,8 @@ fun InicioScreen(
                 singleLine = true,
                 shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedContainerColor = GrisClaro,
-                    focusedContainerColor = GrisClaro,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                     unfocusedBorderColor = androidx.compose.ui.graphics.Color.Transparent,
                     focusedBorderColor = VerdeBodega
                 )
@@ -147,6 +162,19 @@ fun InicioScreen(
                 }
             }
 
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                ChipCategoria(
+                    texto = "Precio ↑",
+                    seleccionado = ordenPrecio == "Menor",
+                    onClick = { ordenPrecio = if (ordenPrecio == "Menor") "Normal" else "Menor" }
+                )
+                ChipCategoria(
+                    texto = "Precio ↓",
+                    seleccionado = ordenPrecio == "Mayor",
+                    onClick = { ordenPrecio = if (ordenPrecio == "Mayor") "Normal" else "Mayor" }
+                )
+            }
+
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 contentPadding = PaddingValues(vertical = 12.dp),
@@ -159,7 +187,9 @@ fun InicioScreen(
                                 producto = producto,
                                 onClick = { onProductoClick(producto) },
                                 onAgregar = { onAgregarProducto(producto) },
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier.weight(1f),
+                                esFavorito = favoritos.contains(producto.id),
+                                onFavoritoClick = { onFavoritoClick(producto) }
                             )
                         }
                         if (fila.size == 1) {
@@ -180,7 +210,7 @@ private fun ChipCategoria(
     seleccionado: Boolean,
     onClick: () -> Unit
 ) {
-    val fondo = if (seleccionado) VerdeBodega else GrisClaro
+    val fondo = if (seleccionado) VerdeBodega else MaterialTheme.colorScheme.surfaceVariant
     val contenido = if (seleccionado) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
 
     Row(
@@ -196,12 +226,14 @@ private fun ChipCategoria(
 @Composable
 private fun BarraInferior(
     cantidadCarrito: Int,
-    onPedidosClick: () -> Unit
+    onPedidosClick: () -> Unit,
+    onFavoritosClick: () -> Unit,
+    onPerfilClick: () -> Unit
 ) {
     var seleccionado by remember { mutableStateOf(0) }
     val items = listOf(
         Triple("Inicio", Icons.Default.Home, 0),
-        Triple("Categorías", Icons.Default.List, 1),
+        Triple("Favoritos", Icons.Default.Favorite, 1),
         Triple("Pedidos", Icons.Default.Receipt, 2),
         Triple("Perfil", Icons.Default.Person, 3)
     )
@@ -212,6 +244,8 @@ private fun BarraInferior(
                 onClick = {
                     seleccionado = indice
                     if (etiqueta == "Pedidos") onPedidosClick()
+                    if (etiqueta == "Favoritos") onFavoritosClick()
+                    if (etiqueta == "Perfil") onPerfilClick()
                 },
                 icon = {
                     if (etiqueta == "Pedidos" && cantidadCarrito > 0) {
@@ -238,9 +272,14 @@ private fun InicioPreview() {
     BodegaTheme {
         InicioScreen(
             cantidadCarrito = 3,
+            favoritos = setOf(1),
             onVerCarrito = {},
+            onVerPedidos = {},
+            onVerFavoritos = {},
+            onVerPerfil = {},
             onProductoClick = {},
-            onAgregarProducto = {}
+            onAgregarProducto = {},
+            onFavoritoClick = {}
         )
     }
 }
