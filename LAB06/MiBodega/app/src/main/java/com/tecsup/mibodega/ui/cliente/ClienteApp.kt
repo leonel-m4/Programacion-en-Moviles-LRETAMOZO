@@ -35,6 +35,10 @@ fun ClienteApp() {
 
     // El carrito vive aquí arriba, no en ninguna Screen.
     var carrito by remember { mutableStateOf<List<ItemCarrito>>(emptyList()) }
+    var nombreCliente by remember { mutableStateOf("Juan Pérez") }
+    var telefonoCliente by remember { mutableStateOf("987 654 321") }
+    var direccionCliente by remember { mutableStateOf("Av. Los Olivos 123") }
+    var referenciaCliente by remember { mutableStateOf("Frente al parque") }
 
     NavHost(
         navController = navController,
@@ -43,7 +47,7 @@ fun ClienteApp() {
         composable(Rutas.BIENVENIDA) {
             BienvenidaScreen(
                 onRegistrarse = { navController.navigate(Rutas.REGISTRO) },
-                onIniciarSesion = { /* TODO: pantalla de login, aún no está en el mockup */ },
+                onIniciarSesion = { navController.navigate(Rutas.INICIO) },
                 onTerminos = { /* TODO: abrir términos y condiciones */ }
             )
         }
@@ -52,7 +56,10 @@ fun ClienteApp() {
             RegistroScreen(
                 onVolver = { navController.popBackStack() },
                 onCrearCuenta = { nombre, telefono, direccion, referencia ->
-                    // TODO: guardar estos datos cuando exista el registro real
+                    nombreCliente = nombre
+                    telefonoCliente = telefono
+                    direccionCliente = direccion
+                    referenciaCliente = referencia
                     navController.navigate(Rutas.INICIO) {
                         popUpTo(Rutas.BIENVENIDA) { inclusive = true }
                     }
@@ -117,6 +124,10 @@ fun ClienteApp() {
 
         composable(Rutas.ENTREGA) {
             DatosEntregaScreen(
+                nombre = nombreCliente,
+                telefono = telefonoCliente,
+                direccion = direccionCliente,
+                referencia = referenciaCliente,
                 onVolver = { navController.popBackStack() },
                 onConfirmarPedido = {
                     navController.navigate(Rutas.CONFIRMACION)
