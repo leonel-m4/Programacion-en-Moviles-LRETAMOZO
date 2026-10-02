@@ -124,13 +124,11 @@ fun ClienteApp() {
 
         composable(Rutas.ENTREGA) {
             DatosEntregaScreen(
-                nombre = nombreCliente,
-                telefono = telefonoCliente,
-                direccion = direccionCliente,
-                referencia = referenciaCliente,
                 onVolver = { navController.popBackStack() },
                 onConfirmarPedido = {
-                    navController.navigate(Rutas.CONFIRMACION)
+                    navController.navigate(Rutas.CONFIRMACION) {
+                        popUpTo(Rutas.ENTREGA) { inclusive = true }
+                    }
                 }
             )
         }
