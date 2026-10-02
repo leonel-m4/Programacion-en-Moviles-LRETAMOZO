@@ -29,13 +29,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tecsup.mibodega.ui.componentes.BotonPrimario
 import com.tecsup.mibodega.ui.theme.BodegaTheme
-import com.tecsup.mibodega.ui.theme.GrisClaro
 import com.tecsup.mibodega.ui.theme.RojoPrecio
 import com.tecsup.mibodega.ui.theme.VerdeBodega
 
 @Composable
 fun ConfirmacionScreen(
     total: Double,
+    tipoEntrega: String,
     onVolverInicio: () -> Unit
 ) {
     Column(
@@ -78,7 +78,7 @@ fun ConfirmacionScreen(
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = GrisClaro)
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text("Pedido #1024", fontWeight = FontWeight.Bold)
@@ -90,6 +90,9 @@ fun ConfirmacionScreen(
                     color = RojoPrecio,
                     fontWeight = FontWeight.Bold
                 )
+                Spacer(Modifier.height(12.dp))
+                Text("Entrega", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(tipoEntrega)
                 Spacer(Modifier.height(12.dp))
                 Text("Dirección", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Text("Av. Los Olivos 123")
@@ -124,7 +127,7 @@ fun ConfirmacionScreen(
 @Composable
 private fun ConfirmacionPreview() {
     BodegaTheme {
-        ConfirmacionScreen(total = 25.90, onVolverInicio = {})
+        ConfirmacionScreen(total = 25.90, tipoEntrega = "Delivery", onVolverInicio = {})
     }
 }
 

@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.LocalShipping
 import androidx.compose.material.icons.filled.Payments
+import androidx.compose.material.icons.filled.Store
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -39,14 +40,19 @@ import com.tecsup.mibodega.ui.theme.VerdeBodega
 
 @Composable
 fun DatosEntregaScreen(
+    subtotal: Double,
     onVolver: () -> Unit,
-    onConfirmarPedido: () -> Unit
+    onConfirmarPedido: (tipoEntrega: String, costoEntrega: Double) -> Unit
 ) {
     var nombreCliente by remember { mutableStateOf("") }
     var telefonoCliente by remember { mutableStateOf("") }
     var direccionCliente by remember { mutableStateOf("") }
     var referenciaCliente by remember { mutableStateOf("") }
     var metodoPago by remember { mutableStateOf("Efectivo") }
+    var tipoEntrega by remember { mutableStateOf("Delivery") }
+    var mostrarErrores by remember { mutableStateOf(false) }
+    val costoEntrega = if (tipoEntrega == "Delivery") 4.00 else 0.00
+    val total = subtotal + costoEntrega
 
     Column(
         modifier = Modifier
@@ -72,7 +78,8 @@ fun DatosEntregaScreen(
             etiqueta = "Nombre",
             valor = nombreCliente,
             onValorCambia = { nombreCliente = it },
-            placeholder = "Juan Pérez"
+            placeholder = "Juan Pérez",
+            esError = mostrarErrores && nombreCliente.isBlank()
         )
         Spacer(Modifier.height(12.dp))
         CampoTexto(
@@ -80,24 +87,55 @@ fun DatosEntregaScreen(
             valor = telefonoCliente,
             onValorCambia = { telefonoCliente = it },
             placeholder = "987 654 321",
-            teclado = KeyboardType.Phone
+            teclado = KeyboardType.Phone,
+            esError = mostrarErrores && telefonoCliente.isBlank()
         )
         Spacer(Modifier.height(12.dp))
         CampoTexto(
             etiqueta = "Dirección",
             valor = direccionCliente,
             onValorCambia = { direccionCliente = it },
-            placeholder = "Av. Los Olivos 123"
+            placeholder = "Av. Los Olivos 123",
+            esError = mostrarErrores && direccionCliente.isBlank()
         )
         Spacer(Modifier.height(12.dp))
         CampoTexto(
             etiqueta = "Referencia",
             valor = referenciaCliente,
             onValorCambia = { referenciaCliente = it },
-            placeholder = "Frente al parque"
+            placeholder = "Frente al parque",
+            esError = mostrarErrores && referenciaCliente.isBlank()
         )
 
+        if (mostrarErrores && listOf(nombreCliente, telefonoCliente, direccionCliente, referenciaCliente).any { it.isBlank() }) {
+            Spacer(Modifier.height(8.dp))
+            Text(
+                text = "Completa todos los campos para confirmar",
+                color = MaterialTheme.colorScheme.error
+            )
+        }
+
         Spacer(Modifier.height(20.dp))
+
+        Text(
+            text = "Tipo de entrega",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold
+        )
+        OpcionPago(
+            texto = "Delivery S/ 4.00",
+            seleccionado = tipoEntrega == "Delivery",
+            icono = { Icon(Icons.Default.LocalShipping, contentDescription = null, tint = VerdeBodega) },
+            onClick = { tipoEntrega = "Delivery" }
+        )
+        OpcionPago(
+            texto = "Recojo en tienda S/ 0.00",
+            seleccionado = tipoEntrega == "Recojo en tienda",
+            icono = { Icon(Icons.Default.Store, contentDescription = null, tint = VerdeBodega) },
+            onClick = { tipoEntrega = "Recojo en tienda" }
+        )
+
+        Spacer(Modifier.height(16.dp))
 
         Text(
             text = "Método de pago",
@@ -124,11 +162,25 @@ fun DatosEntregaScreen(
             onClick = { metodoPago = "Plin" }
         )
 
+        Spacer(Modifier.height(14.dp))
+        Text("Subtotal: S/ %.2f".format(subtotal))
+        Text("Costo de entrega: S/ %.2f".format(costoEntrega))
+        Text(
+            text = "Total: S/ %.2f".format(total),
+            style = MaterialTheme.typography.titleMedium,
+            color = VerdeBodega
+        )
+
         Spacer(Modifier.height(24.dp))
 
         BotonPrimario(
             texto = "Confirmar pedido",
-            onClick = onConfirmarPedido
+            onClick = {
+                mostrarErrores = true
+                if (listOf(nombreCliente, telefonoCliente, direccionCliente, referenciaCliente).all { it.isNotBlank() }) {
+                    onConfirmarPedido(tipoEntrega, costoEntrega)
+                }
+            }
         )
     }
 }
@@ -158,8 +210,9 @@ private fun OpcionPago(
 private fun DatosEntregaPreview() {
     BodegaTheme {
         DatosEntregaScreen(
+            subtotal = 21.90,
             onVolver = {},
-            onConfirmarPedido = {}
+            onConfirmarPedido = { _, _ -> }
         )
     }
 }
