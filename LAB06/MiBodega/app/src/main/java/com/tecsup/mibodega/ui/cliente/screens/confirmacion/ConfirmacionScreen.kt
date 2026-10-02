@@ -36,6 +36,7 @@ import com.tecsup.mibodega.ui.theme.VerdeBodega
 fun ConfirmacionScreen(
     total: Double,
     tipoEntrega: String,
+    numeroPedido: Int = 1,
     onVolverInicio: () -> Unit
 ) {
     Column(
@@ -81,7 +82,7 @@ fun ConfirmacionScreen(
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
-                Text("Pedido #1024", fontWeight = FontWeight.Bold)
+                Text("Pedido #%02d".format(numeroPedido), fontWeight = FontWeight.Bold)
                 Spacer(Modifier.height(12.dp))
                 Text("Total", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Text(
@@ -127,7 +128,7 @@ fun ConfirmacionScreen(
 @Composable
 private fun ConfirmacionPreview() {
     BodegaTheme {
-        ConfirmacionScreen(total = 25.90, tipoEntrega = "Delivery", onVolverInicio = {})
+        ConfirmacionScreen(total = 25.90, tipoEntrega = "Delivery", numeroPedido = 1, onVolverInicio = {})
     }
 }
 

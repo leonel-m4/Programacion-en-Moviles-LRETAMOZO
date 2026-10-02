@@ -59,7 +59,7 @@ fun PedidosScreen(
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
                     ) {
                         Column(Modifier.padding(14.dp)) {
-                            Text("Pedido #${pedido.numero}", fontWeight = FontWeight.Bold)
+                            Text("Pedido #%02d".format(pedido.numero), fontWeight = FontWeight.Bold)
                             Text(pedido.tipoEntrega)
                             Text(pedido.direccion)
                             Text(

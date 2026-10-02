@@ -61,6 +61,7 @@ fun ClienteApp(
     var pedidos by remember { mutableStateOf<List<Pedido>>(emptyList()) }
     var totalConfirmado by remember { mutableStateOf(0.00) }
     var tipoEntregaConfirmada by remember { mutableStateOf("Delivery") }
+    var numeroPedidoConfirmado by remember { mutableStateOf(1) }
 
     Surface(
         modifier = Modifier
@@ -206,11 +207,13 @@ fun ClienteApp(
                 subtotal = carrito.sumOf { it.producto.precio * it.cantidad },
                 onVolver = { navController.popBackStack() },
                 onConfirmarPedido = { tipoEntrega, costoEntrega ->
+                    val nuevoNumero = pedidos.size + 1
                     val nuevoTotal = carrito.sumOf { it.producto.precio * it.cantidad } + costoEntrega
                     tipoEntregaConfirmada = tipoEntrega
                     totalConfirmado = nuevoTotal
+                    numeroPedidoConfirmado = nuevoNumero
                     pedidos = pedidos + Pedido(
-                        numero = 1024 + pedidos.size,
+                        numero = nuevoNumero,
                         total = nuevoTotal,
                         tipoEntrega = tipoEntrega,
                         direccion = direccionCliente
@@ -226,6 +229,7 @@ fun ClienteApp(
             ConfirmacionScreen(
                 total = totalConfirmado,
                 tipoEntrega = tipoEntregaConfirmada,
+                numeroPedido = numeroPedidoConfirmado,
                 onVolverInicio = {
                     carrito = emptyList()
                     navController.navigate(Rutas.INICIO) {
