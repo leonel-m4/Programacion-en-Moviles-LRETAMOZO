@@ -76,6 +76,12 @@ fun DetalleProductoScreen(
                 style = MaterialTheme.typography.titleMedium
             )
 
+            Text(
+                text = producto.unidad,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
             Spacer(Modifier.height(4.dp))
 
             Text(
