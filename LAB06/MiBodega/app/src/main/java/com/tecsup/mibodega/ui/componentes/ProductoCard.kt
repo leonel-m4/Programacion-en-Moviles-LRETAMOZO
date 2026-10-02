@@ -43,7 +43,7 @@ import com.tecsup.mibodega.ui.theme.RojoPrecio
 import com.tecsup.mibodega.ui.theme.VerdeBodega
 
 /**
- * Tarjeta de producto rediseñada con imagen local, etiqueta de categoría,
+ * Tarjeta de producto con fotografía local, etiqueta de categoría,
  * indicador de favorito y botón flotante de agregar al carrito.
  */
 @Composable
@@ -74,7 +74,7 @@ fun ProductoCard(
                     .fillMaxWidth()
                     .aspectRatio(1.2f)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
+                    .background(Color.White),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
