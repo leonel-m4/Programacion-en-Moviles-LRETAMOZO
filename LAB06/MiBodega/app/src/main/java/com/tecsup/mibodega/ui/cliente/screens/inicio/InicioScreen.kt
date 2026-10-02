@@ -75,8 +75,7 @@ fun InicioScreen(
 
     val productosFiltrados = productos.filter { producto ->
         val coincideCategoria = categoriaSeleccionada == "Todos" || producto.categoria == categoriaSeleccionada
-        val coincideBusqueda = producto.nombre.contains(textoBusqueda, ignoreCase = true)
-        coincideCategoria && coincideBusqueda
+        coincideCategoria
     }
 
     Scaffold(
