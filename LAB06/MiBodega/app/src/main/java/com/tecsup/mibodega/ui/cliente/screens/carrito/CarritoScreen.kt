@@ -58,7 +58,8 @@ fun CarritoScreen(
     onContinuarPedido: () -> Unit
 ) {
     val subtotal = carrito.sumOf { it.producto.precio * it.cantidad }
-    val total = subtotal + COSTO_DELIVERY
+    val delivery = if (carrito.isEmpty()) 0.00 else COSTO_DELIVERY
+    val total = subtotal + delivery
 
     Column(
         modifier = Modifier
@@ -67,27 +68,42 @@ fun CarritoScreen(
     ) {
         EncabezadoCarrito(onVolver = onVolver)
 
-        LazyColumn(
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 20.dp),
-            contentPadding = PaddingValues(vertical = 8.dp)
-        ) {
-            items(carrito, key = { it.producto.id }) { item ->
-                FilaCarrito(
-                    item = item,
-                    onIncrementar = { onIncrementar(item.producto) },
-                    onDecrementar = { onDecrementar(item.producto) },
-                    onEliminar = { onEliminar(item.producto) }
+        if (carrito.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Tu carrito está vacío",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 20.dp),
+                contentPadding = PaddingValues(vertical = 8.dp)
+            ) {
+                items(carrito, key = { it.producto.id }) { item ->
+                    FilaCarrito(
+                        item = item,
+                        onIncrementar = { onIncrementar(item.producto) },
+                        onDecrementar = { onDecrementar(item.producto) },
+                        onEliminar = { onEliminar(item.producto) }
+                    )
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                }
             }
         }
 
         ResumenYBoton(
             subtotal = subtotal,
-            delivery = COSTO_DELIVERY,
+            delivery = delivery,
             total = total,
+            carritoVacio = carrito.isEmpty(),
             onContinuarPedido = onContinuarPedido
         )
     }
@@ -149,7 +165,7 @@ private fun FilaCarrito(
                 fontWeight = FontWeight.SemiBold
             )
             Text(
-                text = "S/ %.2f".format(item.producto.precio),
+                text = "${item.producto.unidad}  S/ %.2f".format(item.producto.precio),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -176,6 +192,7 @@ private fun ResumenYBoton(
     subtotal: Double,
     delivery: Double,
     total: Double,
+    carritoVacio: Boolean,
     onContinuarPedido: () -> Unit
 ) {
     Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp)) {
@@ -203,7 +220,8 @@ private fun ResumenYBoton(
 
         BotonPrimario(
             texto = "Continuar pedido",
-            onClick = onContinuarPedido
+            onClick = onContinuarPedido,
+            habilitado = !carritoVacio
         )
     }
 }
