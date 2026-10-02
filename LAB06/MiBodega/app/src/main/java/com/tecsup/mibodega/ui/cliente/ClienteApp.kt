@@ -92,7 +92,7 @@ fun ClienteApp() {
                 onVolver = { navController.popBackStack() },
                 onAgregarAlCarrito = { productoSeleccionado, cantidad ->
                     carrito = agregarOSumarProducto(carrito, productoSeleccionado, cantidad)
-                    navController.popBackStack()
+                    navController.navigate(Rutas.CARRITO)
                 }
             )
         }
