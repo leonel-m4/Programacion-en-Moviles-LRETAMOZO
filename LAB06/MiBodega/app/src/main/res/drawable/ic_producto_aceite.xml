@@ -1,0 +1,33 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    <!-- Fondo suave -->
+    <path
+        android:pathData="M15,15 h90 v90 h-90 z"
+        android:fillColor="#FFFDE7" />
+    <!-- Tapa de la botella de aceite -->
+    <path
+        android:pathData="M52,18 L68,18 L68,26 L52,26 Z"
+        android:fillColor="#388E3C" />
+    <!-- Cuello de la botella -->
+    <path
+        android:pathData="M54,26 L66,26 L66,36 L54,36 Z"
+        android:fillColor="#FFF59D" />
+    <!-- Cuerpo de la botella Primor (Transparente/Amarillo) -->
+    <path
+        android:pathData="M40,38 L80,38 L86,102 L34,102 Z"
+        android:fillColor="#FBC02D" />
+    <!-- Etiqueta Verde Primor -->
+    <path
+        android:pathData="M38,55 L82,55 L84,82 L36,82 Z"
+        android:fillColor="#2E7D32" />
+    <!-- Girasol / Fruta del aceite -->
+    <path
+        android:pathData="M60,68 A8,8 0 1,1 59.9,68 Z"
+        android:fillColor="#FFEB3B" />
+    <path
+        android:pathData="M60,68 A4,4 0 1,1 59.9,68 Z"
+        android:fillColor="#5D4037" />
+</vector>

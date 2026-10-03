@@ -1,0 +1,37 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    <!-- Fondo circular con suave gradiente/color verde -->
+    <path
+        android:pathData="M60,10 A50,50 0 1,1 59.9,10 Z"
+        android:fillColor="#E8F5E9" />
+    <path
+        android:pathData="M60,18 A42,42 0 1,1 59.9,18 Z"
+        android:fillColor="#2E8B3D" />
+    <!-- Techo de Bodega / Minimarket -->
+    <path
+        android:pathData="M35,46 L60,28 L85,46 Z"
+        android:fillColor="#FFFFFF" />
+    <path
+        android:pathData="M38,46 L82,46 L82,50 L38,50 Z"
+        android:fillColor="#81C784" />
+    <!-- Canasta de compras / Frente de Bodega -->
+    <path
+        android:pathData="M40,54 L80,54 L75,86 L45,86 Z"
+        android:fillColor="#FFFFFF" />
+    <!-- Asas/Líneas de la canasta -->
+    <path
+        android:pathData="M48,58 L48,80 M60,58 L60,80 M72,58 L72,80"
+        android:strokeWidth="3"
+        android:strokeColor="#2E8B3D"
+        android:strokeLineCap="round" />
+    <!-- Manijas de la canasta -->
+    <path
+        android:pathData="M45,54 C45,42 75,42 75,54"
+        android:strokeWidth="4"
+        android:strokeColor="#FFFFFF"
+        android:fillColor="#00000000"
+        android:strokeLineCap="round" />
+</vector>

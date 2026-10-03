@@ -1,0 +1,28 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    <!-- Fondo suave -->
+    <path
+        android:pathData="M15,15 h90 v90 h-90 z"
+        android:fillColor="#E3F2FD" />
+    <!-- Lata/Caja de Leche Gloria (Azul y Blanco) -->
+    <path
+        android:pathData="M38,25 L82,25 L82,98 L38,98 Z"
+        android:fillColor="#1565C0" />
+    <!-- Franja Blanca Central -->
+    <path
+        android:pathData="M38,45 L82,45 L82,78 L38,78 Z"
+        android:fillColor="#FFFFFF" />
+    <!-- Cabeza de Vaca / Marca Gloria (Azul/Rojo) -->
+    <path
+        android:pathData="M60,61 A10,10 0 1,1 59.9,61 Z"
+        android:fillColor="#C62828" />
+    <!-- Texto Gloria simulado -->
+    <path
+        android:pathData="M48,35 L72,35 M52,88 L68,88"
+        android:strokeWidth="3"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round" />
+</vector>

@@ -1,0 +1,32 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    <!-- Fondo suave -->
+    <path
+        android:pathData="M15,15 h90 v90 h-90 z"
+        android:fillColor="#E1F5FE" />
+    <!-- Empaque Azul Oreo -->
+    <path
+        android:pathData="M25,40 L95,40 L90,80 L30,80 Z"
+        android:fillColor="#0277BD" />
+    <!-- Galleta Oreo saliendo/destacada -->
+    <path
+        android:pathData="M60,60 A24,24 0 1,1 59.9,60 Z"
+        android:fillColor="#212121" />
+    <!-- Relleno Blanco -->
+    <path
+        android:pathData="M60,60 A18,18 0 1,1 59.9,60 Z"
+        android:fillColor="#FFFFFF" />
+    <!-- Tapa Superior Galleta -->
+    <path
+        android:pathData="M60,60 A15,15 0 1,1 59.9,60 Z"
+        android:fillColor="#37474F" />
+    <!-- Relieve de la galleta -->
+    <path
+        android:pathData="M52,60 L68,60 M60,52 L60,68"
+        android:strokeWidth="2"
+        android:strokeColor="#78909C"
+        android:strokeLineCap="round" />
+</vector>
