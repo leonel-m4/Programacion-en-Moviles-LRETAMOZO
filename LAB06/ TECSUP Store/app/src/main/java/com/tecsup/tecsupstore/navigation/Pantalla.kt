@@ -6,6 +6,5 @@ sealed class Pantalla(
     object Inicio : Pantalla("inicio")
     object Pedidos : Pantalla("pedidos")
     object Favoritos : Pantalla("favoritos")
-    object Carrito : Pantalla("carrito")
     object Perfil : Pantalla("perfil")
 }

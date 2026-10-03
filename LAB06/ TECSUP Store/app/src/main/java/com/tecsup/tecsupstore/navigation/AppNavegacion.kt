@@ -1,19 +1,21 @@
 package com.tecsup.tecsupstore.navigation
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -24,92 +26,89 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.tecsup.tecsupstore.ItemCarrito
-import com.tecsup.tecsupstore.Pedido
 import com.tecsup.tecsupstore.Producto
-import com.tecsup.tecsupstore.Usuario
-import com.tecsup.tecsupstore.listaProductosControlada
-import com.tecsup.tecsupstore.screens.PantallaCarrito
-import com.tecsup.tecsupstore.screens.PantallaFavoritos
 import com.tecsup.tecsupstore.screens.PantallaInicio
-import com.tecsup.tecsupstore.screens.PantallaPedidos
-import com.tecsup.tecsupstore.screens.PantallaPerfil
+import com.tecsup.tecsupstore.screens.TarjetaProducto
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+
+private val Morado = Color(0xFF6A2C91)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppNavegacion(
-    isDarkMode: Boolean,
-    onToggleDarkMode: (Boolean) -> Unit
-) {
+fun AppNavegacion() {
     val navController = rememberNavController()
-    val estadoDrawer = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val scope = rememberCoroutineScope()
-    val snackbarHostState = remember { SnackbarHostState() }
 
-    var favoritosIds by remember { mutableStateOf(setOf<Int>()) }
-    var carritoItems by remember { mutableStateOf(listOf<ItemCarrito>()) }
-    var pedidosList by remember { mutableStateOf(listOf<Pedido>()) }
-    var usuario by remember {
-        mutableStateOf(
-            Usuario(
-                nombre = "Maria Rojas",
-                correo = "maria@tecsup.edu.pe",
-                telefono = "+51 987 654 321",
-                direccion = "Av. Principal 123, Lima"
-            )
+    val estadoDrawer = rememberDrawerState(
+        initialValue = DrawerValue.Closed
+    )
+
+    val scope = rememberCoroutineScope()
+
+    var favoritosIds by remember {
+        mutableStateOf(setOf<Int>())
+    }
+
+    val listaProductos = remember {
+        listOf(
+            Producto(id = 1, nombre = "Audífonos", precio = 89.00),
+            Producto(id = 2, nombre = "Smartwatch", precio = 199.00),
+            Producto(id = 3, nombre = "Funda celular", precio = 25.00)
         )
     }
 
-    val listaProductos = remember { listaProductosControlada }
-    val totalCarritoCount = carritoItems.sumOf { it.cantidad }
+    val entradaActual by
+    navController.currentBackStackEntryAsState()
 
-    val entradaActual by navController.currentBackStackEntryAsState()
-    val rutaActual = entradaActual?.destination?.route ?: Pantalla.Inicio.ruta
+    val rutaActual =
+        entradaActual?.destination?.route
+            ?: Pantalla.Inicio.ruta
 
     ModalNavigationDrawer(
         drawerState = estadoDrawer,
         drawerContent = {
             CajonNavegacion(
                 rutaActual = rutaActual,
-                usuario = usuario,
                 cantidadFavoritos = favoritosIds.size,
-                cantidadCarrito = totalCarritoCount,
-                cantidadPedidos = pedidosList.size,
-                isDarkMode = isDarkMode,
-                onToggleDarkMode = onToggleDarkMode,
                 onOpcionSeleccionada = { ruta ->
                     navController.navigate(ruta) {
-                        popUpTo(Pantalla.Inicio.ruta)
+                        popUpTo(
+                            Pantalla.Inicio.ruta
+                        )
                         launchSingleTop = true
                     }
-                    scope.launch { estadoDrawer.close() }
+
+                    scope.launch {
+                        estadoDrawer.close()
+                    }
                 }
             )
         }
     ) {
         Scaffold(
-            snackbarHost = { SnackbarHost(snackbarHostState) },
             topBar = {
                 TopAppBar(
                     navigationIcon = {
                         IconButton(
-                            onClick = { scope.launch { estadoDrawer.open() } }
+                            onClick = {
+                                scope.launch {
+                                    estadoDrawer.open()
+                                }
+                            }
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Menu,
                                 contentDescription = "Abrir menú",
-                                tint = MaterialTheme.colorScheme.onPrimary
+                                tint = Color.White
                             )
                         }
                     },
@@ -117,28 +116,22 @@ fun AppNavegacion(
                         Column {
                             Text(
                                 text = "TECSUP Store",
-                                color = MaterialTheme.colorScheme.onPrimary,
+                                color = Color.White,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 19.sp
                             )
+
                             Text(
-                                text = when (rutaActual) {
-                                    Pantalla.Inicio.ruta -> "Catálogo principal"
-                                    Pantalla.Pedidos.ruta -> "Mis pedidos"
-                                    Pantalla.Favoritos.ruta -> "Favoritos"
-                                    Pantalla.Carrito.ruta -> "Carrito de compras"
-                                    Pantalla.Perfil.ruta -> "Perfil"
-                                    else -> "Tienda oficial"
-                                },
-                                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f),
+                                text = "Más vendidos",
+                                color = Color.White.copy(
+                                    alpha = 0.8f
+                                ),
                                 fontSize = 11.sp
                             )
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                        navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
+                        containerColor = Morado
                     )
                 )
             }
@@ -148,124 +141,112 @@ fun AppNavegacion(
                 startDestination = Pantalla.Inicio.ruta,
                 modifier = Modifier.padding(padding)
             ) {
-                composable(route = Pantalla.Inicio.ruta) {
+                composable(
+                    route = Pantalla.Inicio.ruta
+                ) {
                     PantallaInicio(
-                        productos = listaProductos,
                         favoritosIds = favoritosIds,
                         onToggleFavorito = { id ->
-                            val esFavorito = id in favoritosIds
-                            favoritosIds = if (esFavorito) favoritosIds - id else favoritosIds + id
-                            val prod = listaProductos.find { it.id == id }
-                            scope.launch {
-                                val mensaje = if (esFavorito) "Quitado de favoritos: ${prod?.nombre}" else "Agregado a favoritos: ${prod?.nombre}"
-                                snackbarHostState.showSnackbar(mensaje)
-                            }
-                        },
-                        onAgregarCarrito = { producto ->
-                            val index = carritoItems.indexOfFirst { it.producto.id == producto.id }
-                            carritoItems = if (index >= 0) {
-                                carritoItems.mapIndexed { idx, item ->
-                                    if (idx == index) item.copy(cantidad = item.cantidad + 1) else item
-                                }
+                            favoritosIds = if (id in favoritosIds) {
+                                favoritosIds - id
                             } else {
-                                carritoItems + ItemCarrito(producto, 1)
-                            }
-                            scope.launch {
-                                snackbarHostState.showSnackbar("Agregado al carrito: ${producto.nombre}")
+                                favoritosIds + id
                             }
                         }
                     )
                 }
 
-                composable(route = Pantalla.Pedidos.ruta) {
-                    PantallaPedidos(pedidos = pedidosList)
+                composable(
+                    route = Pantalla.Pedidos.ruta
+                ) {
+                    PantallaDestino(
+                        titulo = "Mis pedidos"
+                    )
                 }
 
-                composable(route = Pantalla.Favoritos.ruta) {
+                composable(
+                    route = Pantalla.Favoritos.ruta
+                ) {
                     val productosFavoritos = listaProductos.filter { it.id in favoritosIds }
                     PantallaFavoritos(
                         productosFavoritos = productosFavoritos,
                         favoritosIds = favoritosIds,
                         onToggleFavorito = { id ->
-                            favoritosIds = favoritosIds - id
-                            scope.launch {
-                                snackbarHostState.showSnackbar("Producto eliminado de favoritos")
-                            }
-                        },
-                        onAgregarCarrito = { producto ->
-                            val index = carritoItems.indexOfFirst { it.producto.id == producto.id }
-                            carritoItems = if (index >= 0) {
-                                carritoItems.mapIndexed { idx, item ->
-                                    if (idx == index) item.copy(cantidad = item.cantidad + 1) else item
-                                }
+                            favoritosIds = if (id in favoritosIds) {
+                                favoritosIds - id
                             } else {
-                                carritoItems + ItemCarrito(producto, 1)
-                            }
-                            scope.launch {
-                                snackbarHostState.showSnackbar("Agregado al carrito: ${producto.nombre}")
+                                favoritosIds + id
                             }
                         }
                     )
                 }
 
-                composable(route = Pantalla.Carrito.ruta) {
-                    PantallaCarrito(
-                        carritoItems = carritoItems,
-                        onIncrementar = { item ->
-                            carritoItems = carritoItems.map {
-                                if (it.producto.id == item.producto.id) it.copy(cantidad = it.cantidad + 1) else it
-                            }
-                        },
-                        onDecrementar = { item ->
-                            carritoItems = carritoItems.mapNotNull {
-                                if (it.producto.id == item.producto.id) {
-                                    if (it.cantidad > 1) it.copy(cantidad = it.cantidad - 1) else null
-                                } else it
-                            }
-                        },
-                        onEliminarItem = { item ->
-                            carritoItems = carritoItems.filter { it.producto.id != item.producto.id }
-                            scope.launch {
-                                snackbarHostState.showSnackbar("Eliminado del carrito: ${item.producto.nombre}")
-                            }
-                        },
-                        onCheckout = {
-                            if (carritoItems.isNotEmpty()) {
-                                val fechaActual = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
-                                val totalCompra = carritoItems.sumOf { it.producto.precio * it.cantidad } + 15.00
-                                val nuevoPedido = Pedido(
-                                    codigo = "PED-2026-${(100..999).random()}",
-                                    fecha = fechaActual,
-                                    items = carritoItems,
-                                    total = totalCompra,
-                                    estado = "En preparación"
-                                )
-                                pedidosList = listOf(nuevoPedido) + pedidosList
-                                carritoItems = emptyList()
-                                scope.launch {
-                                    snackbarHostState.showSnackbar("¡Compra realizada con éxito! Pedido generado.")
-                                }
-                                navController.navigate(Pantalla.Pedidos.ruta) {
-                                    popUpTo(Pantalla.Inicio.ruta)
-                                    launchSingleTop = true
-                                }
-                            }
-                        }
-                    )
-                }
-
-                composable(route = Pantalla.Perfil.ruta) {
-                    PantallaPerfil(
-                        usuario = usuario,
-                        onActualizarUsuario = { nuevoUsuario ->
-                            usuario = nuevoUsuario
-                            scope.launch {
-                                snackbarHostState.showSnackbar("Perfil actualizado correctamente")
-                            }
-                        }
+                composable(
+                    route = Pantalla.Perfil.ruta
+                ) {
+                    PantallaDestino(
+                        titulo = "Perfil"
                     )
                 }
             }
         }
+    }
+}
+
+@Composable
+fun PantallaFavoritos(
+    productosFavoritos: List<Producto>,
+    favoritosIds: Set<Int>,
+    onToggleFavorito: (Int) -> Unit
+) {
+    if (productosFavoritos.isEmpty()) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "No tienes productos favoritos",
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp,
+                color = Color.Gray
+            )
+        }
+    } else {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(
+                top = 16.dp,
+                bottom = 16.dp
+            ),
+            verticalArrangement = Arrangement.spacedBy(
+                4.dp
+            )
+        ) {
+            items(productosFavoritos, key = { it.id }) { producto ->
+                TarjetaProducto(
+                    producto = producto,
+                    isFavorito = producto.id in favoritosIds,
+                    onToggleFavorito = {
+                        onToggleFavorito(producto.id)
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun PantallaDestino(
+    titulo: String
+) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = titulo,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold
+        )
     }
 }
