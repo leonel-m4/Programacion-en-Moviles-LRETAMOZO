@@ -89,7 +89,7 @@ fun PantallaCarrito(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(carritoItems, key = { it.id }) { producto ->
+                items(carritoItems) { producto ->
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
