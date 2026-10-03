@@ -31,6 +31,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.tecsup.tecsupstore.ItemCarrito
 import com.tecsup.tecsupstore.Pedido
 import com.tecsup.tecsupstore.Producto
 import com.tecsup.tecsupstore.Usuario
@@ -57,7 +58,7 @@ fun AppNavegacion(
     val snackbarHostState = remember { SnackbarHostState() }
 
     var favoritosIds by remember { mutableStateOf(setOf<Int>()) }
-    var carritoItems by remember { mutableStateOf(listOf<Producto>()) }
+    var carritoItems by remember { mutableStateOf(listOf<ItemCarrito>()) }
     var pedidosList by remember { mutableStateOf(listOf<Pedido>()) }
     var usuario by remember {
         mutableStateOf(
@@ -71,6 +72,7 @@ fun AppNavegacion(
     }
 
     val listaProductos = remember { listaProductosControlada }
+    val totalCarritoCount = carritoItems.sumOf { it.cantidad }
 
     val entradaActual by navController.currentBackStackEntryAsState()
     val rutaActual = entradaActual?.destination?.route ?: Pantalla.Inicio.ruta
@@ -82,7 +84,7 @@ fun AppNavegacion(
                 rutaActual = rutaActual,
                 usuario = usuario,
                 cantidadFavoritos = favoritosIds.size,
-                cantidadCarrito = carritoItems.size,
+                cantidadCarrito = totalCarritoCount,
                 cantidadPedidos = pedidosList.size,
                 isDarkMode = isDarkMode,
                 onToggleDarkMode = onToggleDarkMode,
@@ -160,7 +162,14 @@ fun AppNavegacion(
                             }
                         },
                         onAgregarCarrito = { producto ->
-                            carritoItems = carritoItems + producto
+                            val index = carritoItems.indexOfFirst { it.producto.id == producto.id }
+                            carritoItems = if (index >= 0) {
+                                carritoItems.mapIndexed { idx, item ->
+                                    if (idx == index) item.copy(cantidad = item.cantidad + 1) else item
+                                }
+                            } else {
+                                carritoItems + ItemCarrito(producto, 1)
+                            }
                             scope.launch {
                                 snackbarHostState.showSnackbar("Agregado al carrito: ${producto.nombre}")
                             }
@@ -184,7 +193,14 @@ fun AppNavegacion(
                             }
                         },
                         onAgregarCarrito = { producto ->
-                            carritoItems = carritoItems + producto
+                            val index = carritoItems.indexOfFirst { it.producto.id == producto.id }
+                            carritoItems = if (index >= 0) {
+                                carritoItems.mapIndexed { idx, item ->
+                                    if (idx == index) item.copy(cantidad = item.cantidad + 1) else item
+                                }
+                            } else {
+                                carritoItems + ItemCarrito(producto, 1)
+                            }
                             scope.launch {
                                 snackbarHostState.showSnackbar("Agregado al carrito: ${producto.nombre}")
                             }
@@ -195,16 +211,28 @@ fun AppNavegacion(
                 composable(route = Pantalla.Carrito.ruta) {
                     PantallaCarrito(
                         carritoItems = carritoItems,
-                        onEliminarItem = { producto ->
-                            carritoItems = carritoItems - producto
+                        onIncrementar = { item ->
+                            carritoItems = carritoItems.map {
+                                if (it.producto.id == item.producto.id) it.copy(cantidad = it.cantidad + 1) else it
+                            }
+                        },
+                        onDecrementar = { item ->
+                            carritoItems = carritoItems.mapNotNull {
+                                if (it.producto.id == item.producto.id) {
+                                    if (it.cantidad > 1) it.copy(cantidad = it.cantidad - 1) else null
+                                } else it
+                            }
+                        },
+                        onEliminarItem = { item ->
+                            carritoItems = carritoItems.filter { it.producto.id != item.producto.id }
                             scope.launch {
-                                snackbarHostState.showSnackbar("Eliminado del carrito: ${producto.nombre}")
+                                snackbarHostState.showSnackbar("Eliminado del carrito: ${item.producto.nombre}")
                             }
                         },
                         onCheckout = {
                             if (carritoItems.isNotEmpty()) {
                                 val fechaActual = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
-                                val totalCompra = carritoItems.sumOf { it.precio } + 15.00
+                                val totalCompra = carritoItems.sumOf { it.producto.precio * it.cantidad } + 15.00
                                 val nuevoPedido = Pedido(
                                     codigo = "PED-2026-${(100..999).random()}",
                                     fecha = fechaActual,

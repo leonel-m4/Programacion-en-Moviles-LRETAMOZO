@@ -12,10 +12,15 @@ data class Producto(
     val etiqueta: String? = null
 )
 
+data class ItemCarrito(
+    val producto: Producto,
+    val cantidad: Int = 1
+)
+
 data class Pedido(
     val codigo: String,
     val fecha: String,
-    val items: List<Producto>,
+    val items: List<ItemCarrito>,
     val total: Double,
     val estado: String
 )

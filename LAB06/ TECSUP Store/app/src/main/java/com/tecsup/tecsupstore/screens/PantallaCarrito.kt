@@ -17,7 +17,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.ShoppingBag
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Button
@@ -28,6 +30,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -35,15 +38,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.tecsup.tecsupstore.Producto
+import com.tecsup.tecsupstore.ItemCarrito
 
 @Composable
 fun PantallaCarrito(
-    carritoItems: List<Producto>,
-    onEliminarItem: (Producto) -> Unit,
+    carritoItems: List<ItemCarrito>,
+    onIncrementar: (ItemCarrito) -> Unit,
+    onDecrementar: (ItemCarrito) -> Unit,
+    onEliminarItem: (ItemCarrito) -> Unit,
     onCheckout: () -> Unit
 ) {
-    val subtotal = carritoItems.sumOf { it.precio }
+    val subtotal = carritoItems.sumOf { it.producto.precio * it.cantidad }
     val delivery = if (carritoItems.isNotEmpty()) 15.00 else 0.00
     val total = subtotal + delivery
 
@@ -89,7 +94,7 @@ fun PantallaCarrito(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(carritoItems) { producto ->
+                items(carritoItems, key = { it.producto.id }) { item ->
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
@@ -118,20 +123,63 @@ fun PantallaCarrito(
                                 modifier = Modifier.weight(1f)
                             ) {
                                 Text(
-                                    text = producto.nombre,
+                                    text = item.producto.nombre,
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 15.sp,
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
-                                    text = "S/ %.2f".format(producto.precio),
+                                    text = "S/ %.2f c/u".format(item.producto.precio),
                                     color = MaterialTheme.colorScheme.primary,
                                     fontWeight = FontWeight.SemiBold,
-                                    fontSize = 14.sp
+                                    fontSize = 13.sp
                                 )
                             }
+
+                            // Control de cantidad
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(horizontal = 4.dp)
+                            ) {
+                                Surface(
+                                    onClick = { onDecrementar(item) },
+                                    shape = RoundedCornerShape(6.dp),
+                                    color = MaterialTheme.colorScheme.surface,
+                                    shadowElevation = 1.dp
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Remove,
+                                        contentDescription = "Disminuir",
+                                        modifier = Modifier.padding(4.dp).size(16.dp),
+                                        tint = MaterialTheme.colorScheme.onSurface
+                                    )
+                                }
+
+                                Text(
+                                    text = item.cantidad.toString(),
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 15.sp,
+                                    modifier = Modifier.padding(horizontal = 10.dp),
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+
+                                Surface(
+                                    onClick = { onIncrementar(item) },
+                                    shape = RoundedCornerShape(6.dp),
+                                    color = MaterialTheme.colorScheme.primary,
+                                    shadowElevation = 1.dp
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Add,
+                                        contentDescription = "Aumentar",
+                                        modifier = Modifier.padding(4.dp).size(16.dp),
+                                        tint = MaterialTheme.colorScheme.onPrimary
+                                    )
+                                }
+                            }
+
                             IconButton(
-                                onClick = { onEliminarItem(producto) }
+                                onClick = { onEliminarItem(item) }
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Delete,
