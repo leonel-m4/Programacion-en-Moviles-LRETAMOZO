@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -17,7 +16,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
@@ -26,7 +24,6 @@ import androidx.compose.material.icons.filled.VerifiedUser
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -51,36 +48,20 @@ fun PerfilScreen(
     telefono: String,
     direccion: String,
     modoOscuro: Boolean,
-    onCambiarModoOscuro: (Boolean) -> Unit,
-    onVolver: () -> Unit
+    onCambiarModoOscuro: (Boolean) -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .safeDrawingPadding()
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 20.dp)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(top = 8.dp)
-        ) {
-            IconButton(
-                onClick = onVolver,
-                modifier = Modifier.background(
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                    shape = CircleShape
-                )
-            ) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
-            }
-            Spacer(Modifier.width(12.dp))
-            Text(
-                text = "Mi Perfil",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.ExtraBold
-            )
-        }
+        Text(
+            text = "Mi Perfil",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.ExtraBold,
+            modifier = Modifier.padding(top = 16.dp)
+        )
 
         Spacer(Modifier.height(24.dp))
 
@@ -278,6 +259,6 @@ private fun DatoPerfil(
 @Composable
 private fun PerfilPreview() {
     BodegaTheme {
-        PerfilScreen("Juan Pérez", "987 654 321", "Av. Los Olivos 123", false, {}, {})
+        PerfilScreen("Juan Pérez", "987 654 321", "Av. Los Olivos 123", false, {})
     }
 }

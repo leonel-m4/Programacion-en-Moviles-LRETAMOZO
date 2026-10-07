@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -73,7 +72,8 @@ fun CarritoScreen(
     onIncrementar: (Producto) -> Unit,
     onDecrementar: (Producto) -> Unit,
     onEliminar: (Producto) -> Unit,
-    onContinuarPedido: () -> Unit
+    onContinuarPedido: () -> Unit,
+    onExplorarProductos: () -> Unit = onVolver
 ) {
     val subtotal = carrito.sumOf { it.producto.precio * it.cantidad }
     val delivery = if (carrito.isEmpty()) 0.00 else COSTO_DELIVERY
@@ -81,9 +81,7 @@ fun CarritoScreen(
     var productoAEliminar by remember { mutableStateOf<Producto?>(null) }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .safeDrawingPadding()
+        modifier = Modifier.fillMaxSize()
     ) {
         EncabezadoCarrito(
             cantidadItems = carrito.sumOf { it.cantidad },
@@ -133,7 +131,7 @@ fun CarritoScreen(
                     )
                     Spacer(modifier = Modifier.height(24.dp))
                     Button(
-                        onClick = onVolver,
+                        onClick = onExplorarProductos,
                         shape = RoundedCornerShape(16.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = VerdeBodega)
                     ) {
