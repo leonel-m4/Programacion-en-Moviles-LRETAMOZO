@@ -1,6 +1,5 @@
 package com.tecsup.ayudacampus.ui.navigation
 
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -22,9 +21,14 @@ import com.tecsup.ayudacampus.ui.cliente.LoginScreen
 import com.tecsup.ayudacampus.ui.cliente.MisTicketsScreen
 import com.tecsup.ayudacampus.ui.cliente.NuevoTicketScreen
 import com.tecsup.ayudacampus.ui.cliente.SplashScreen
+import com.tecsup.ayudacampus.ui.soporte.BandejaScreen
+import com.tecsup.ayudacampus.ui.soporte.PanelScreen
+import com.tecsup.ayudacampus.ui.theme.AyudaTheme
 import com.tecsup.ayudacampus.viewmodel.AyudaViewModelFactory
+import com.tecsup.ayudacampus.viewmodel.BandejaViewModel
 import com.tecsup.ayudacampus.viewmodel.MisTicketsViewModel
 import com.tecsup.ayudacampus.viewmodel.NuevoTicketViewModel
+import com.tecsup.ayudacampus.viewmodel.PanelViewModel
 import com.tecsup.ayudacampus.viewmodel.SesionViewModel
 import com.tecsup.ayudacampus.viewmodel.TicketDetalleViewModel
 
@@ -69,11 +73,13 @@ fun NavAyuda() {
                         initializer { MisTicketsViewModel(app.repository, clienteId) }
                     }
                 )
-                MisTicketsScreen(
-                    vm = vm,
-                    onTicket = { navController.navigate("${Rutas.DETALLE}/$it") },
-                    onNuevo = { navController.navigate(Rutas.NUEVO_TICKET) }
-                )
+                AyudaTheme(Rol.CLIENTE) {
+                    MisTicketsScreen(
+                        vm = vm,
+                        onTicket = { navController.navigate("${Rutas.DETALLE}/$it") },
+                        onNuevo = { navController.navigate(Rutas.NUEVO_TICKET) }
+                    )
+                }
             }
         }
 
@@ -86,10 +92,12 @@ fun NavAyuda() {
                         initializer { NuevoTicketViewModel(app.repository, clienteId) }
                     }
                 )
-                NuevoTicketScreen(
-                    vm = vm,
-                    onCreado = { navController.popBackStack() }
-                )
+                AyudaTheme(Rol.CLIENTE) {
+                    NuevoTicketScreen(
+                        vm = vm,
+                        onCreado = { navController.popBackStack() }
+                    )
+                }
             }
         }
 
@@ -104,9 +112,37 @@ fun NavAyuda() {
                     initializer { TicketDetalleViewModel(app.repository, ticketId) }
                 }
             )
-            DetalleTicketScreen(vm = vm)
+            AyudaTheme(Rol.CLIENTE) {
+                DetalleTicketScreen(vm = vm)
+            }
         }
 
-        composable(Rutas.PANEL) { Text("Panel") }
+        composable(Rutas.PANEL) {
+            val vm: PanelViewModel = viewModel(
+                factory = viewModelFactory {
+                    initializer { PanelViewModel(app.repository) }
+                }
+            )
+            AyudaTheme(Rol.ADMIN) {
+                PanelScreen(
+                    vm = vm,
+                    onVerAltas = { navController.navigate(Rutas.BANDEJA) }
+                )
+            }
+        }
+
+        composable(Rutas.BANDEJA) {
+            val vm: BandejaViewModel = viewModel(
+                factory = viewModelFactory {
+                    initializer { BandejaViewModel(app.repository) }
+                }
+            )
+            AyudaTheme(Rol.ADMIN) {
+                BandejaScreen(
+                    vm = vm,
+                    onTicket = { navController.navigate("${Rutas.ATENDER}/$it") }
+                )
+            }
+        }
     }
 }
