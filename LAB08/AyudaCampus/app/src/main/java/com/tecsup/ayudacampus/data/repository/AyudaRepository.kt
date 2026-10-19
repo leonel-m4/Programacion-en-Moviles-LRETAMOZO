@@ -1,3 +1,6 @@
+package com.tecsup.ayudacampus.data.repository
+
+import com.tecsup.ayudacampus.data.local.entity.Categoria
 import com.tecsup.ayudacampus.data.local.entity.Usuario
 import com.tecsup.ayudacampus.data.local.relation.TicketConDetalle
 import com.tecsup.ayudacampus.model.ConteoCategoria
