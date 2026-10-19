@@ -7,4 +7,5 @@ object Rutas {
     const val PANEL = "panel"
     const val NUEVO_TICKET = "nuevo_ticket"
     const val DETALLE = "detalle"
+    const val DETALLE_RUTA = "detalle/{ticketId}"
 }
