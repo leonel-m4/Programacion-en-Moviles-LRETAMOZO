@@ -17,9 +17,11 @@ import com.tecsup.ayudacampus.data.prefs.PreferenciasStore
 import com.tecsup.ayudacampus.model.Rol
 import com.tecsup.ayudacampus.ui.cliente.LoginScreen
 import com.tecsup.ayudacampus.ui.cliente.MisTicketsScreen
+import com.tecsup.ayudacampus.ui.cliente.NuevoTicketScreen
 import com.tecsup.ayudacampus.ui.cliente.SplashScreen
 import com.tecsup.ayudacampus.viewmodel.AyudaViewModelFactory
 import com.tecsup.ayudacampus.viewmodel.MisTicketsViewModel
+import com.tecsup.ayudacampus.viewmodel.NuevoTicketViewModel
 import com.tecsup.ayudacampus.viewmodel.SesionViewModel
 
 @Composable
@@ -67,6 +69,22 @@ fun NavAyuda() {
                     vm = vm,
                     onTicket = { navController.navigate("${Rutas.DETALLE}/$it") },
                     onNuevo = { navController.navigate(Rutas.NUEVO_TICKET) }
+                )
+            }
+        }
+
+        composable(Rutas.NUEVO_TICKET) {
+            val clienteId by prefs.usuarioId.collectAsState(initial = 0)
+            if (clienteId > 0) {
+                val vm: NuevoTicketViewModel = viewModel(
+                    key = "nuevo_ticket_$clienteId",
+                    factory = viewModelFactory {
+                        initializer { NuevoTicketViewModel(app.repository, clienteId) }
+                    }
+                )
+                NuevoTicketScreen(
+                    vm = vm,
+                    onCreado = { navController.popBackStack() }
                 )
             }
         }

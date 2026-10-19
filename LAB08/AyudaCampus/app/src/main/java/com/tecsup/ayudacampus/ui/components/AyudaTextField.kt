@@ -14,13 +14,18 @@ fun AyudaTextField(
     onValueChange: (String) -> Unit,
     label: String,
     esPassword: Boolean = false,
+    error: String? = null,
+    singleLine: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         label = { Text(label) },
-        singleLine = true,
+        singleLine = singleLine,
+        minLines = if (singleLine) 1 else 3,
+        isError = error != null,
+        supportingText = { error?.let { Text(it) } },
         visualTransformation = if (esPassword) PasswordVisualTransformation() else VisualTransformation.None,
         modifier = modifier.fillMaxWidth()
     )
