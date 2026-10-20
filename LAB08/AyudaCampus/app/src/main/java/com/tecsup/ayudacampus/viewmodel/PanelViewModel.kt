@@ -56,4 +56,15 @@ class PanelViewModel(repo: AyudaRepository) : ViewModel() {
     val altasSinAtender: StateFlow<Int> =
         repo.observarAltasSinAtender(System.currentTimeMillis() - 3600L * 1000L)
             .stateIn(viewModelScope, inicio, 0)
+
+    val tiempoPromedioResolucion: StateFlow<String> = repo.observarTiempoPromedioResolucion()
+        .map { millis ->
+            if (millis <= 0L) "Sin registros"
+            else {
+                val horas = millis / (1000 * 60 * 60)
+                val minutos = (millis / (1000 * 60)) % 60
+                if (horas > 0) "$horas h $minutos min" else "$minutos min"
+            }
+        }
+        .stateIn(viewModelScope, inicio, "Calculando...")
 }

@@ -36,6 +36,7 @@ fun PanelScreen(vm: PanelViewModel, onVerAltas: () -> Unit) {
     val porEstado by vm.porEstado.collectAsState()
     val porCategoria by vm.porCategoria.collectAsState()
     val altas by vm.altasSinAtender.collectAsState()
+    val tiempoPromedio by vm.tiempoPromedioResolucion.collectAsState()
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -54,6 +55,16 @@ fun PanelScreen(vm: PanelViewModel, onVerAltas: () -> Unit) {
                 Contador("Abiertos", abiertos, colorEstado(EstadoTicket.ABIERTO.name), Modifier.weight(1f))
                 Contador("En proceso", enProceso, colorEstado(EstadoTicket.EN_PROCESO.name), Modifier.weight(1f))
                 Contador("Resueltos", resueltos, colorEstado(EstadoTicket.RESUELTO.name), Modifier.weight(1f))
+            }
+
+            Card(
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text("Tiempo promedio de resolución", style = MaterialTheme.typography.labelMedium)
+                    Text(tiempoPromedio, style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.primary)
+                }
             }
 
             if (altas > 0) {
