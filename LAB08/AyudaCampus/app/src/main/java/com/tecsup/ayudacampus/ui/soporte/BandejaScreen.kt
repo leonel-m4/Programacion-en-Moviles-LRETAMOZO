@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -33,36 +34,41 @@ fun BandejaScreen(vm: BandejaViewModel, onTicket: (Int) -> Unit) {
         "Resueltos" to EstadoTicket.RESUELTO
     )
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
     ) {
-        Text("Bandeja de tickets", style = MaterialTheme.typography.headlineSmall)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Text("Bandeja de tickets", style = MaterialTheme.typography.headlineSmall)
 
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            filtros.forEach { (nombre, valor) ->
-                FilterChip(
-                    selected = estado == valor,
-                    onClick = { vm.seleccionarEstado(valor) },
-                    label = { Text(nombre) }
-                )
-            }
-        }
-
-        if (tickets.isEmpty()) {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("No hay tickets aquí")
-            }
-        } else {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                items(tickets, key = { it.ticket.id }) { d ->
-                    TicketCard(
-                        detalle = d,
-                        mostrarCliente = true,
-                        onClick = { onTicket(d.ticket.id) }
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                filtros.forEach { (nombre, valor) ->
+                    FilterChip(
+                        selected = estado == valor,
+                        onClick = { vm.seleccionarEstado(valor) },
+                        label = { Text(nombre) }
                     )
+                }
+            }
+
+            if (tickets.isEmpty()) {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("No hay tickets aquí")
+                }
+            } else {
+                LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    items(tickets, key = { it.ticket.id }) { d ->
+                        TicketCard(
+                            detalle = d,
+                            mostrarCliente = true,
+                            onClick = { onTicket(d.ticket.id) }
+                        )
+                    }
                 }
             }
         }

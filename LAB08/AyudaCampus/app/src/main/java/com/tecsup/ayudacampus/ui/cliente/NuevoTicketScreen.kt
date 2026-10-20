@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -12,6 +13,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -44,79 +46,85 @@ fun NuevoTicketScreen(
         "Alta" to Prioridad.ALTA
     )
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
     ) {
-        if (!recibirTickets) {
-            Text("Mesa de ayuda cerrada", color = MaterialTheme.colorScheme.error)
-        }
-
-        Text("Nuevo ticket", style = MaterialTheme.typography.headlineSmall)
-
-        Text("Categoría", style = MaterialTheme.typography.titleSmall)
-        Row(
-            modifier = Modifier.horizontalScroll(rememberScrollState()),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .imePadding()
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            categorias.forEach { c ->
-                FilterChip(
-                    selected = categoriaId == c.id,
-                    onClick = { vm.elegirCategoria(c.id) },
-                    label = { Text(c.nombre) },
-                    leadingIcon = {
-                        Icon(
-                            iconoCategoria(c.icono),
-                            contentDescription = null,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
-                )
+            if (!recibirTickets) {
+                Text("Mesa de ayuda cerrada", color = MaterialTheme.colorScheme.error)
             }
-        }
-        errores.categoria?.let {
-            Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
-        }
 
-        AyudaTextField(
-            value = titulo,
-            onValueChange = vm::cambiarTitulo,
-            label = "Título",
-            error = errores.titulo
-        )
+            Text("Nuevo ticket", style = MaterialTheme.typography.headlineSmall)
 
-        AyudaTextField(
-            value = ubicacion,
-            onValueChange = vm::cambiarUbicacion,
-            label = "Ubicación"
-        )
-
-        Text("Prioridad", style = MaterialTheme.typography.titleSmall)
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            prioridades.forEach { (nombre, valor) ->
-                FilterChip(
-                    selected = prioridad == valor,
-                    onClick = { vm.cambiarPrioridad(valor) },
-                    label = { Text(nombre) }
-                )
+            Text("Categoría", style = MaterialTheme.typography.titleSmall)
+            Row(
+                modifier = Modifier.horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                categorias.forEach { c ->
+                    FilterChip(
+                        selected = categoriaId == c.id,
+                        onClick = { vm.elegirCategoria(c.id) },
+                        label = { Text(c.nombre) },
+                        leadingIcon = {
+                            Icon(
+                                iconoCategoria(c.icono),
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                    )
+                }
             }
+            errores.categoria?.let {
+                Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+            }
+
+            AyudaTextField(
+                value = titulo,
+                onValueChange = vm::cambiarTitulo,
+                label = "Título",
+                error = errores.titulo
+            )
+
+            AyudaTextField(
+                value = ubicacion,
+                onValueChange = vm::cambiarUbicacion,
+                label = "Ubicación"
+            )
+
+            Text("Prioridad", style = MaterialTheme.typography.titleSmall)
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                prioridades.forEach { (nombre, valor) ->
+                    FilterChip(
+                        selected = prioridad == valor,
+                        onClick = { vm.cambiarPrioridad(valor) },
+                        label = { Text(nombre) }
+                    )
+                }
+            }
+
+            AyudaTextField(
+                value = descripcion,
+                onValueChange = vm::cambiarDescripcion,
+                label = "Descripción",
+                error = errores.descripcion,
+                singleLine = false
+            )
+
+            AyudaButton(
+                text = "Enviar ticket",
+                enabled = recibirTickets,
+                onClick = { vm.enviar(onCreado) }
+            )
         }
-
-        AyudaTextField(
-            value = descripcion,
-            onValueChange = vm::cambiarDescripcion,
-            label = "Descripción",
-            error = errores.descripcion,
-            singleLine = false
-        )
-
-        AyudaButton(
-            text = "Enviar ticket",
-            enabled = recibirTickets,
-            onClick = { vm.enviar(onCreado) }
-        )
     }
 }

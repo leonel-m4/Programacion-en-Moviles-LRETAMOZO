@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,22 +30,27 @@ fun AjustesScreen(
     val notificaciones by sesion.notificaciones.collectAsState()
     val recibir by sesion.recibirTickets.collectAsState()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
     ) {
-        Text("Ajustes", style = MaterialTheme.typography.headlineSmall)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text("Ajustes", style = MaterialTheme.typography.headlineSmall)
 
-        Fila("Modo oscuro", oscuro, sesion::guardarModoOscuro)
-        Fila("Notificaciones", notificaciones, sesion::guardarNotificaciones)
-        Fila("Recibir tickets", recibir, sesion::guardarRecibirTickets)
+            Fila("Modo oscuro", oscuro, sesion::guardarModoOscuro)
+            Fila("Notificaciones", notificaciones, sesion::guardarNotificaciones)
+            Fila("Recibir tickets", recibir, sesion::guardarRecibirTickets)
 
-        OutlinedButton(onClick = onCambiarPerfil, modifier = Modifier.fillMaxWidth()) {
-            Text("Cambiar a perfil Estudiante")
+            OutlinedButton(onClick = onCambiarPerfil, modifier = Modifier.fillMaxWidth()) {
+                Text("Cambiar a perfil Estudiante")
+            }
+            AyudaButton(text = "Cerrar sesión", onClick = onCerrarSesion)
         }
-        AyudaButton(text = "Cerrar sesión", onClick = onCerrarSesion)
     }
 }
 

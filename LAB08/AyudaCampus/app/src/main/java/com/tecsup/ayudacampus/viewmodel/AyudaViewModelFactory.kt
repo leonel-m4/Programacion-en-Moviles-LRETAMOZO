@@ -1,6 +1,5 @@
 package com.tecsup.ayudacampus.viewmodel
 
-import CategoriasViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.tecsup.ayudacampus.data.prefs.PreferenciasStore

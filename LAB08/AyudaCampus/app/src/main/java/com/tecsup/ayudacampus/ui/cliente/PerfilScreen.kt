@@ -11,6 +11,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,35 +40,40 @@ fun PerfilScreen(
     val abiertos = tickets.count { it.ticket.estado == EstadoTicket.ABIERTO.name }
     val resueltos = tickets.count { it.ticket.estado == EstadoTicket.RESUELTO.name }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
     ) {
-        Text("Perfil", style = MaterialTheme.typography.headlineSmall)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text("Perfil", style = MaterialTheme.typography.headlineSmall)
 
-        Card(Modifier.fillMaxWidth()) {
-            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(cliente?.nombre ?: "Estudiante", style = MaterialTheme.typography.titleMedium)
-                Text(cliente?.correo ?: "", style = MaterialTheme.typography.bodyMedium)
+            Card(Modifier.fillMaxWidth()) {
+                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text(cliente?.nombre ?: "Estudiante", style = MaterialTheme.typography.titleMedium)
+                    Text(cliente?.correo ?: "", style = MaterialTheme.typography.bodyMedium)
+                }
             }
-        }
 
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Contador("Abiertos", abiertos, Modifier.weight(1f))
-            Contador("Resueltos", resueltos, Modifier.weight(1f))
-            Contador("Totales", tickets.size, Modifier.weight(1f))
-        }
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Contador("Abiertos", abiertos, Modifier.weight(1f))
+                Contador("Resueltos", resueltos, Modifier.weight(1f))
+                Contador("Totales", tickets.size, Modifier.weight(1f))
+            }
 
-        FilaSwitch("Modo oscuro", oscuro, sesion::guardarModoOscuro)
-        FilaSwitch("Notificaciones", notificaciones, sesion::guardarNotificaciones)
+            FilaSwitch("Modo oscuro", oscuro, sesion::guardarModoOscuro)
+            FilaSwitch("Notificaciones", notificaciones, sesion::guardarNotificaciones)
 
-        OutlinedButton(onClick = onCambiarPerfil, modifier = Modifier.fillMaxWidth()) {
-            Text("Cambiar a perfil Soporte TI")
+            OutlinedButton(onClick = onCambiarPerfil, modifier = Modifier.fillMaxWidth()) {
+                Text("Cambiar a perfil Soporte TI")
+            }
+            AyudaButton(text = "Cerrar sesión", onClick = onCerrarSesion)
         }
-        AyudaButton(text = "Cerrar sesión", onClick = onCerrarSesion)
     }
 }
 

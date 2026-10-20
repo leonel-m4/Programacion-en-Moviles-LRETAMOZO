@@ -1,5 +1,6 @@
 package com.tecsup.ayudacampus.ui.soporte
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,6 +14,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,94 +48,99 @@ fun FormularioCategoriaScreen(
 
     val iconos = listOf("pc", "code", "wifi", "key", "printer", "tag")
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
     ) {
-        Text(
-            if (categoriaId == null) "Nueva categoría" else "Editar categoría",
-            style = MaterialTheme.typography.headlineSmall
-        )
-
-        AyudaTextField(
-            value = nombre,
-            onValueChange = {
-                nombre = it
-                error = null
-            },
-            label = "Nombre",
-            error = error
-        )
-
-        Text("Icono", style = MaterialTheme.typography.titleSmall)
-        Row(
-            modifier = Modifier.verticalScroll(rememberScrollState()),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            iconos.forEach { i ->
-                FilterChip(
-                    selected = icono == i,
-                    onClick = { icono = i },
-                    label = { Text(i) },
-                    leadingIcon = {
-                        Icon(iconoCategoria(i), contentDescription = null, modifier = Modifier.size(18.dp))
-                    }
-                )
-            }
-        }
+            Text(
+                if (categoriaId == null) "Nueva categoría" else "Editar categoría",
+                style = MaterialTheme.typography.headlineSmall
+            )
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text("Activa", style = MaterialTheme.typography.titleSmall)
-            Switch(checked = activa, onCheckedChange = { activa = it })
-        }
+            AyudaTextField(
+                value = nombre,
+                onValueChange = {
+                    nombre = it
+                    error = null
+                },
+                label = "Nombre",
+                error = error
+            )
 
-        Text("Vista previa", style = MaterialTheme.typography.titleSmall)
-        Card(modifier = Modifier.fillMaxWidth()) {
+            Text("Icono", style = MaterialTheme.typography.titleSmall)
             Row(
-                modifier = Modifier.padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                modifier = Modifier.horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Icon(
-                    iconoCategoria(icono),
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(28.dp)
-                )
-                Column {
-                    Text(
-                        nombre.ifBlank { "Nombre de la categoría" },
-                        style = MaterialTheme.typography.titleMedium
+                iconos.forEach { i ->
+                    FilterChip(
+                        selected = icono == i,
+                        onClick = { icono = i },
+                        label = { Text(i) },
+                        leadingIcon = {
+                            Icon(iconoCategoria(i), contentDescription = null, modifier = Modifier.size(18.dp))
+                        }
                     )
-                    Text(if (activa) "Activa" else "Inactiva", style = MaterialTheme.typography.bodySmall)
                 }
             }
-        }
 
-        AyudaButton(
-            text = "Guardar",
-            onClick = {
-                if (nombre.isBlank()) {
-                    error = "El nombre es obligatorio"
-                } else {
-                    vm.guardar(
-                        Categoria(
-                            id = existente?.id ?: 0,
-                            nombre = nombre.trim(),
-                            icono = icono,
-                            activa = activa
-                        )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text("Activa", style = MaterialTheme.typography.titleSmall)
+                Switch(checked = activa, onCheckedChange = { activa = it })
+            }
+
+            Text("Vista previa", style = MaterialTheme.typography.titleSmall)
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Row(
+                    modifier = Modifier.padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Icon(
+                        iconoCategoria(icono),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(28.dp)
                     )
-                    onListo()
+                    Column {
+                        Text(
+                            nombre.ifBlank { "Nombre de la categoría" },
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(if (activa) "Activa" else "Inactiva", style = MaterialTheme.typography.bodySmall)
+                    }
                 }
             }
-        )
+
+            AyudaButton(
+                text = "Guardar",
+                onClick = {
+                    if (nombre.isBlank()) {
+                        error = "El nombre es obligatorio"
+                    } else {
+                        vm.guardar(
+                            Categoria(
+                                id = existente?.id ?: 0,
+                                nombre = nombre.trim(),
+                                icono = icono,
+                                activa = activa
+                            )
+                        )
+                        onListo()
+                    }
+                }
+            )
+        }
     }
 }

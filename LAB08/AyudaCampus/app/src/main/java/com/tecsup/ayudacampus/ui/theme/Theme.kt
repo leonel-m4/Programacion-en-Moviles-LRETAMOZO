@@ -23,12 +23,20 @@ private val AdminClaro = lightColorScheme(
 
 private val ClienteOscuro = darkColorScheme(
     primary = Color(0xFF22D3EE),
-    primaryContainer = Color(0xFF0E4F5C)
+    primaryContainer = Color(0xFF0E4F5C),
+    onPrimaryContainer = Color(0xFFCFFAFE),
+    background = Color(0xFF0B1416),
+    surface = Color(0xFF0B1416),
+    surfaceVariant = Color(0xFF1F2A2D)
 )
 
 private val AdminOscuro = darkColorScheme(
     primary = Color(0xFFA78BFA),
-    primaryContainer = Color(0xFF3B2A78)
+    primaryContainer = Color(0xFF3B2A78),
+    onPrimaryContainer = Color(0xFFEDE4FF),
+    background = Color(0xFF110E1A),
+    surface = Color(0xFF110E1A),
+    surfaceVariant = Color(0xFF241F33)
 )
 
 @Composable
