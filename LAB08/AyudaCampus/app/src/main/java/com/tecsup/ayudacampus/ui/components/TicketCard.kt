@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Computer
@@ -20,6 +21,7 @@ import androidx.compose.material.icons.filled.Label
 import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -47,7 +49,12 @@ fun TicketCard(
     mostrarCliente: Boolean = false
 ) {
     val t = detalle.ticket
-    Card(onClick = onClick, modifier = modifier.fillMaxWidth()) {
+    Card(
+        onClick = onClick,
+        shape = RoundedCornerShape(14.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        modifier = modifier.fillMaxWidth()
+    ) {
         Row(Modifier.height(IntrinsicSize.Min)) {
             Box(
                 Modifier
@@ -57,24 +64,25 @@ fun TicketCard(
             )
             Row(
                 Modifier
-                    .padding(12.dp)
+                    .padding(14.dp)
                     .fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(14.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     iconoCategoria(detalle.categoria.icono),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(28.dp)
+                    modifier = Modifier.size(32.dp)
                 )
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Text("#${t.id} · ${t.titulo}", style = MaterialTheme.typography.titleMedium)
                     Text(
                         if (mostrarCliente) "${detalle.cliente.nombre} · ${t.ubicacion}" else t.ubicacion,
-                        style = MaterialTheme.typography.bodySmall
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         EstadoChip(t.estado)
                         PrioridadChip(t.prioridad)
                     }
