@@ -19,12 +19,42 @@ class BandejaViewModel(repo: AyudaRepository) : ViewModel() {
     private val _estado = MutableStateFlow<EstadoTicket?>(null)
     val estado: StateFlow<EstadoTicket?> = _estado.asStateFlow()
 
+    private val _texto = MutableStateFlow("")
+    val texto: StateFlow<String> = _texto.asStateFlow()
+
+    private val _prioridad = MutableStateFlow<String?>(null)
+    val prioridad: StateFlow<String?> = _prioridad.asStateFlow()
+
+    private val _categoriaId = MutableStateFlow<Int?>(null)
+    val categoriaId: StateFlow<Int?> = _categoriaId.asStateFlow()
+
     val tickets: StateFlow<List<TicketConDetalle>> =
-        combine(todos, _estado) { lista, estado ->
-            if (estado == null) lista else lista.filter { it.ticket.estado == estado.name }
+        combine(todos, _estado, _texto, _prioridad, _categoriaId) { lista, estado, texto, prioridad, catId ->
+            lista.filter { d ->
+                val matchEstado = estado == null || d.ticket.estado == estado.name
+                val matchPrioridad = prioridad == null || d.ticket.prioridad == prioridad
+                val matchCat = catId == null || d.ticket.categoriaId == catId
+                val matchTexto = texto.isBlank() ||
+                        d.ticket.titulo.contains(texto, ignoreCase = true) ||
+                        d.ticket.descripcion.contains(texto, ignoreCase = true) ||
+                        d.cliente.nombre.contains(texto, ignoreCase = true)
+                matchEstado && matchPrioridad && matchCat && matchTexto
+            }
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     fun seleccionarEstado(e: EstadoTicket?) {
         _estado.value = e
+    }
+
+    fun buscarTexto(t: String) {
+        _texto.value = t
+    }
+
+    fun seleccionarPrioridad(p: String?) {
+        _prioridad.value = p
+    }
+
+    fun seleccionarCategoria(c: Int?) {
+        _categoriaId.value = c
     }
 }
