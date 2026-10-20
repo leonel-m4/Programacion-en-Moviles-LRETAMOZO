@@ -24,6 +24,12 @@
 **Que tuve que corregir yo:** Ajusté los parámetros de elevación y radios para mantener una consistencia visual óptima en todas las pantallas.
 **Respeta MVVM?:** Si. No se alteró ninguna capa de lógica, datos o arquitectura; solo se rediseñaron los componentes visuales de la capa de UI.
 
+## Prompt 5
+**Texto enviado a Gemini:** Actúa como un Senior Android UI Engineer y especialista en Material Design 3. Realiza un rediseño radical de toda la interfaz visual de la aplicación con un estilo Premium Modern Android App, definiendo una paleta de colores profesional (#2563EB azul moderno, #0D9488 teal, #F8FAFC fondo), tipografía jerarquizada, tarjetas modernas con bordes redondeados (14-18 dp), botones estilizados de 50-56 dp y campos de texto optimizados, manteniendo 100% intacta la lógica de negocio, ViewModels, DAOs y navegación.
+**Que genero la IA:** Definición de un sistema de diseño profesional en `Color.kt` y `Theme.kt`, actualización de componentes globales (`AyudaButton`, `AyudaTextField`, `TicketCard`) con Material Design 3 avanzado.
+**Que tuve que corregir yo:** Ajusté los contrastes y paletas de color para los roles de cliente y administrador tanto en modo claro como oscuro.
+**Respeta MVVM?:** Si. La arquitectura, ViewModels, base de datos y repositorios permanecieron completamente intactos; los cambios afectaron exclusivamente a la capa de UI.
+
 ## Reflexion (5 lineas)
 - La IA ayudó a estructurar rápidamente las consultas SQL, flujos y componentes de Compose.
 - Fue necesario verificar la consistencia de tipos entre la base de datos y la UI.
