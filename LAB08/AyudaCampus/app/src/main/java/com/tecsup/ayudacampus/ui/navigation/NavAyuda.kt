@@ -14,6 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.tecsup.ayudacampus.AyudaApp
+import com.tecsup.ayudacampus.data.local.entity.Usuario
 import com.tecsup.ayudacampus.data.prefs.PreferenciasStore
 import com.tecsup.ayudacampus.model.Rol
 import com.tecsup.ayudacampus.ui.cliente.DetalleTicketScreen
@@ -21,11 +22,16 @@ import com.tecsup.ayudacampus.ui.cliente.LoginScreen
 import com.tecsup.ayudacampus.ui.cliente.MisTicketsScreen
 import com.tecsup.ayudacampus.ui.cliente.NuevoTicketScreen
 import com.tecsup.ayudacampus.ui.cliente.SplashScreen
+import com.tecsup.ayudacampus.ui.soporte.AtenderTicketScreen
 import com.tecsup.ayudacampus.ui.soporte.BandejaScreen
+import com.tecsup.ayudacampus.ui.soporte.CategoriasScreen
+import com.tecsup.ayudacampus.ui.soporte.FormularioCategoriaScreen
 import com.tecsup.ayudacampus.ui.soporte.PanelScreen
 import com.tecsup.ayudacampus.ui.theme.AyudaTheme
+import com.tecsup.ayudacampus.viewmodel.AtenderViewModel
 import com.tecsup.ayudacampus.viewmodel.AyudaViewModelFactory
 import com.tecsup.ayudacampus.viewmodel.BandejaViewModel
+import com.tecsup.ayudacampus.viewmodel.CategoriasViewModel
 import com.tecsup.ayudacampus.viewmodel.MisTicketsViewModel
 import com.tecsup.ayudacampus.viewmodel.NuevoTicketViewModel
 import com.tecsup.ayudacampus.viewmodel.PanelViewModel
@@ -126,7 +132,8 @@ fun NavAyuda() {
             AyudaTheme(Rol.ADMIN) {
                 PanelScreen(
                     vm = vm,
-                    onVerAltas = { navController.navigate(Rutas.BANDEJA) }
+                    onVerAltas = { navController.navigate(Rutas.BANDEJA) },
+                    onCategorias = { navController.navigate(Rutas.CATEGORIAS) }
                 )
             }
         }
@@ -141,6 +148,66 @@ fun NavAyuda() {
                 BandejaScreen(
                     vm = vm,
                     onTicket = { navController.navigate("${Rutas.ATENDER}/$it") }
+                )
+            }
+        }
+
+        composable(
+            route = Rutas.ATENDER_RUTA,
+            arguments = listOf(navArgument("ticketId") { type = NavType.IntType })
+        ) { entry ->
+            val ticketId = entry.arguments?.getInt("ticketId") ?: return@composable
+            val soporteId by prefs.usuarioId.collectAsState(initial = 0)
+            if (soporteId > 0) {
+                val vm: AtenderViewModel = viewModel(
+                    key = "atender_$ticketId",
+                    factory = viewModelFactory {
+                        initializer {
+                            AtenderViewModel(
+                                repo = app.repository,
+                                ticketId = ticketId,
+                                autor = Usuario(
+                                    id = soporteId,
+                                    nombre = "Soporte TI",
+                                    correo = "",
+                                    clave = "",
+                                    rol = Rol.ADMIN.name
+                                )
+                            )
+                        }
+                    }
+                )
+                AyudaTheme(Rol.ADMIN) {
+                    AtenderTicketScreen(
+                        vm = vm,
+                        onGuardado = { navController.popBackStack() }
+                    )
+                }
+            }
+        }
+
+        composable(Rutas.CATEGORIAS) {
+            val vm: CategoriasViewModel = viewModel(factory = factory)
+            AyudaTheme(Rol.ADMIN) {
+                CategoriasScreen(
+                    vm = vm,
+                    onEditar = { navController.navigate("${Rutas.FORM_CATEGORIA}/$it") },
+                    onNueva = { navController.navigate("${Rutas.FORM_CATEGORIA}/-1") }
+                )
+            }
+        }
+
+        composable(
+            route = Rutas.FORM_CATEGORIA_RUTA,
+            arguments = listOf(navArgument("id") { type = NavType.IntType })
+        ) { entry ->
+            val id = entry.arguments?.getInt("id") ?: -1
+            val vm: CategoriasViewModel = viewModel(key = "form_categoria", factory = factory)
+            AyudaTheme(Rol.ADMIN) {
+                FormularioCategoriaScreen(
+                    vm = vm,
+                    categoriaId = if (id == -1) null else id,
+                    onListo = { navController.popBackStack() }
                 )
             }
         }

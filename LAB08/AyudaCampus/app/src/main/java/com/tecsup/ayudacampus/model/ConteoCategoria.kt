@@ -1,4 +1,6 @@
 package com.tecsup.ayudacampus.model
 
-class ConteoCategoria {
-}
+data class ConteoCategoria(
+    val categoria: String,
+    val total: Int
+)

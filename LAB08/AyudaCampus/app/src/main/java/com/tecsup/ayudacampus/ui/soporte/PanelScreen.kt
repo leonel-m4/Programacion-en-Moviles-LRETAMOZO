@@ -13,6 +13,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -28,7 +29,7 @@ import com.tecsup.ayudacampus.ui.components.graficos.GraficoDona
 import com.tecsup.ayudacampus.viewmodel.PanelViewModel
 
 @Composable
-fun PanelScreen(vm: PanelViewModel, onVerAltas: () -> Unit) {
+fun PanelScreen(vm: PanelViewModel, onVerAltas: () -> Unit, onCategorias: () -> Unit = {}) {
     val abiertos by vm.abiertos.collectAsState()
     val enProceso by vm.enProceso.collectAsState()
     val resueltos by vm.resueltos.collectAsState()
@@ -44,7 +45,7 @@ fun PanelScreen(vm: PanelViewModel, onVerAltas: () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text("Panel de soporte", style = MaterialTheme.typography.headlineSmall)
-
+        OutlinedButton(onClick = onCategorias) { Text("Gestionar categorías") }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Contador("Abiertos", abiertos, colorEstado(EstadoTicket.ABIERTO.name), Modifier.weight(1f))
             Contador("En proceso", enProceso, colorEstado(EstadoTicket.EN_PROCESO.name), Modifier.weight(1f))
