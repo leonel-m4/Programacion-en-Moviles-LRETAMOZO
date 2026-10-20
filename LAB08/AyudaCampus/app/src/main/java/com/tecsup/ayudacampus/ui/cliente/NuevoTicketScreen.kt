@@ -27,7 +27,8 @@ import com.tecsup.ayudacampus.viewmodel.NuevoTicketViewModel
 @Composable
 fun NuevoTicketScreen(
     vm: NuevoTicketViewModel,
-    onCreado: () -> Unit
+    onCreado: () -> Unit,
+    recibirTickets: Boolean = true
 ) {
     val categorias by vm.categorias.collectAsState()
     val categoriaId by vm.categoriaId.collectAsState()
@@ -50,6 +51,10 @@ fun NuevoTicketScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
+        if (!recibirTickets) {
+            Text("Mesa de ayuda cerrada", color = MaterialTheme.colorScheme.error)
+        }
+
         Text("Nuevo ticket", style = MaterialTheme.typography.headlineSmall)
 
         Text("Categoría", style = MaterialTheme.typography.titleSmall)
@@ -110,6 +115,7 @@ fun NuevoTicketScreen(
 
         AyudaButton(
             text = "Enviar ticket",
+            enabled = recibirTickets,
             onClick = { vm.enviar(onCreado) }
         )
     }

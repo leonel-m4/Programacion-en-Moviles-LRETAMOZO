@@ -31,7 +31,8 @@ import com.tecsup.ayudacampus.viewmodel.MisTicketsViewModel
 fun MisTicketsScreen(
     vm: MisTicketsViewModel,
     onTicket: (Int) -> Unit,
-    onNuevo: () -> Unit
+    onNuevo: () -> Unit,
+    recibirTickets: Boolean = true
 ) {
     val tickets by vm.tickets.collectAsState()
     val estado by vm.estado.collectAsState()
@@ -47,7 +48,7 @@ fun MisTicketsScreen(
 
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = onNuevo) {
+            FloatingActionButton(onClick = { if (recibirTickets) onNuevo() }) {
                 Icon(Icons.Filled.Add, contentDescription = "Nuevo ticket")
             }
         }
@@ -63,6 +64,10 @@ fun MisTicketsScreen(
                 "Tienes $abiertos tickets abiertos",
                 style = MaterialTheme.typography.bodyMedium
             )
+
+            if (!recibirTickets) {
+                Text("Mesa de ayuda cerrada", color = MaterialTheme.colorScheme.error)
+            }
 
             AyudaTextField(
                 value = busqueda,
