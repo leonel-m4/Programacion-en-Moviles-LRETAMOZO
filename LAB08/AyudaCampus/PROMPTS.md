@@ -18,9 +18,15 @@
 **Que tuve que corregir yo:** Conecté correctamente los estados reactivos `_texto`, `_prioridad` y `_estado` usando `combine`.
 **Respeta MVVM?:** Si. La View emite eventos de filtrado al ViewModel y observa el estado filtrado (`StateFlow`).
 
+## Prompt 4
+**Texto enviado a Gemini:** Actúa como un desarrollador Android Senior especializado en Kotlin, Jetpack Compose y Material Design 3. Rediseña y mejora la interfaz visual de la aplicación aplicando principios de Material Design 3, tarjetas modernas con bordes redondeados y elevación, botones estilizados y tipografía limpia, manteniendo 100% intacta la lógica, ViewModels, Repositorios, DAOs y navegación.
+**Que genero la IA:** Propuesta de estilos visuales modernos, tarjetas con esquinas redondeadas (`RoundedCornerShape(14.dp)`), botones estilizados (`RoundedCornerShape(12.dp)`) y componentes visuales actualizados.
+**Que tuve que corregir yo:** Ajusté los parámetros de elevación y radios para mantener una consistencia visual óptima en todas las pantallas.
+**Respeta MVVM?:** Si. No se alteró ninguna capa de lógica, datos o arquitectura; solo se rediseñaron los componentes visuales de la capa de UI.
+
 ## Reflexion (5 lineas)
 - La IA ayudó a estructurar rápidamente las consultas SQL, flujos y componentes de Compose.
 - Fue necesario verificar la consistencia de tipos entre la base de datos y la UI.
 - Aprendí a mantener estrictamente la separación de responsabilidades en la arquitectura MVVM.
 - Room y Kotlin Flows facilitan la reactividad en tiempo real de los datos.
-- El uso de Repository como única fuente de verdad simplifica la ampliación de funcionalidades.
+- El uso de Repository como única fuente de verdad simplifica la ampliación de funcionalidades y el rediseño visual de la UI.
