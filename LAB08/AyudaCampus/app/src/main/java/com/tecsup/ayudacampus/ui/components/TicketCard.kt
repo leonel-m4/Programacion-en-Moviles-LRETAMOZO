@@ -78,6 +78,26 @@ fun TicketCard(
                         EstadoChip(t.estado)
                         PrioridadChip(t.prioridad)
                     }
+                    val slaMillis = when (t.prioridad) {
+                        "ALTA" -> 4L * 3600 * 1000
+                        "MEDIA" -> 24L * 3600 * 1000
+                        else -> 72L * 3600 * 1000
+                    }
+                    val transcurrido = System.currentTimeMillis() - t.fecha
+                    val restante = slaMillis - transcurrido
+                    val textoSla = if (t.estado == "CERRADO" || t.estado == "RESUELTO") {
+                        "SLA Cumplido"
+                    } else if (restante > 0) {
+                        val h = restante / (1000 * 60 * 60)
+                        "SLA: ${h}h restantes"
+                    } else {
+                        "SLA Vencido"
+                    }
+                    Text(
+                        textoSla,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = if (restante < 0 && t.estado != "CERRADO" && t.estado != "RESUELTO") MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
         }
