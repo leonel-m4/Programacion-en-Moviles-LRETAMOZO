@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "36169999406",
+    "project_id": "authfirebaseapp-e5681",
+    "storage_bucket": "authfirebaseapp-e5681.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:36169999406:android:c6ede84f58cff1d551ebbf",
+        "android_client_info": {
+          "package_name": "com.retamozo.authfirebaseapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBpMMcBrXVB49ZUKoHP9TM_Dk-W91N8HQU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
