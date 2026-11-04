@@ -2,19 +2,16 @@
 package com.retamozo.authfirebaseapp
 
 import android.widget.Toast
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.google.firebase.auth.FirebaseAuth
-import com.retamozo.authfirebaseapp.R
 
 @Composable
 fun LoginScreen(
@@ -34,7 +31,7 @@ fun LoginScreen(
             .padding(16.dp)
     ) {
 
-        // ---------- TÍTULO SUPERIOR ----------
+        // TITULO SUPERIOR
         Column(
             modifier = Modifier
                 .align(Alignment.TopCenter)
@@ -46,31 +43,19 @@ fun LoginScreen(
                 style = MaterialTheme.typography.titleLarge,
                 textAlign = TextAlign.Center
             )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // ---------- IMAGEN TECSUP ----------
-            Image(
-                painter = painterResource(id = R.drawable.tecsup),
-                contentDescription = "Logo Tecsup",
-                modifier = Modifier
-                    .size(120.dp)
-                    .align(Alignment.CenterHorizontally)
-            )
         }
 
-        // ---------- CONTENIDO PRINCIPAL ----------
+        // CONTENIDO PRINCIPAL
         Column(
             modifier = Modifier.align(Alignment.Center),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
             Text(
-                "Iniciar Sesión 🔐",
+                text = "Iniciar Sesión",
                 style = MaterialTheme.typography.headlineMedium
             )
 
-            Spacer(Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
                 value = email,
@@ -79,6 +64,8 @@ fun LoginScreen(
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
                 value = password,
@@ -89,7 +76,7 @@ fun LoginScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             Button(
                 onClick = {
@@ -104,26 +91,28 @@ fun LoginScreen(
 
                     isLoading = true
 
-                    auth.signInWithEmailAndPassword(email, password)
-                        .addOnCompleteListener { task ->
-                            isLoading = false
+                    auth.signInWithEmailAndPassword(
+                        email.trim(),
+                        password
+                    ).addOnCompleteListener { task ->
+                        isLoading = false
 
-                            if (task.isSuccessful) {
-                                Toast.makeText(
-                                    context,
-                                    "Inicio exitoso ✅",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                        if (task.isSuccessful) {
+                            Toast.makeText(
+                                context,
+                                "Inicio exitoso",
+                                Toast.LENGTH_SHORT
+                            ).show()
 
-                                onLoginSuccess()
-                            } else {
-                                Toast.makeText(
-                                    context,
-                                    "Error: ${task.exception?.message}",
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            }
+                            onLoginSuccess()
+                        } else {
+                            Toast.makeText(
+                                context,
+                                "Error: ${task.exception?.message}",
+                                Toast.LENGTH_LONG
+                            ).show()
                         }
+                    }
                 },
                 enabled = !isLoading,
                 modifier = Modifier.fillMaxWidth()
@@ -141,7 +130,7 @@ fun LoginScreen(
             }
         }
 
-        // ---------- PIE DE PÁGINA ----------
+        // PIE DE PAGINA
         Text(
             text = "Juan León S. - Tecsup",
             style = MaterialTheme.typography.bodySmall,
