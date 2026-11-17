@@ -1,7 +1,10 @@
 package com.retamozo.campusgps.ui
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
+import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -89,14 +92,16 @@ fun PantallaMapa(vm: MapaViewModel) {
                 .padding(espacio),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            MapaUbicacion(
-                estado = estado,
-                lugares = lugares,
-                seleccionado = seleccionado,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            )
+            if (estado !is UbicacionUi.Error) {
+                MapaUbicacion(
+                    estado = estado,
+                    lugares = lugares,
+                    seleccionado = seleccionado,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                )
+            }
 
             Column(
                 modifier = Modifier
@@ -119,38 +124,50 @@ fun PantallaMapa(vm: MapaViewModel) {
                         Text("Latitud: ${actual.posicion.latitud}")
                         Text("Longitud: ${actual.posicion.longitud}")
                     }
-                    is UbicacionUi.Error -> Text(
-                        text = actual.mensaje,
-                        color = MaterialTheme.colorScheme.error
+                    is UbicacionUi.Error -> MensajeError(
+                        error = actual,
+                        onAbrirAjustes = {
+                            val intent = Intent(
+                                Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                Uri.fromParts("package", contexto.packageName, null)
+                            )
+                            contexto.startActivity(intent)
+                        },
+                        onReintentar = alPulsar,
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
 
-                OutlinedButton(
-                    onClick = { vm.seleccionar(masCercano?.id) },
-                    enabled = masCercano != null && estado != UbicacionUi.Buscando
-                ) {
-                    Text("Ir al más cercano")
-                }
+                if (estado !is UbicacionUi.Error) {
+                    OutlinedButton(
+                        onClick = { vm.seleccionar(masCercano?.id) },
+                        enabled = masCercano != null && estado != UbicacionUi.Buscando
+                    ) {
+                        Text("Ir al más cercano")
+                    }
 
-                val distanciaCercana = lugares
-                    .firstOrNull { it.lugar.id == masCercano?.id }?.metros
-                if (masCercano != null && distanciaCercana != null) {
-                    Text(
-                        text = "Más cercano: ${masCercano?.nombre} " +
-                            "(${formatearDistancia(distanciaCercana)})",
-                        style = MaterialTheme.typography.bodySmall
-                    )
+                    val distanciaCercana = lugares
+                        .firstOrNull { it.lugar.id == masCercano?.id }?.metros
+                    if (masCercano != null && distanciaCercana != null) {
+                        Text(
+                            text = "Más cercano: ${masCercano?.nombre} " +
+                                "(${formatearDistancia(distanciaCercana)})",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
                 }
             }
 
-            ListaLugares(
-                lugares = lugares,
-                seleccionado = seleccionado,
-                onClick = { vm.seleccionar(it) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(220.dp)
-            )
+            if (estado !is UbicacionUi.Error) {
+                ListaLugares(
+                    lugares = lugares,
+                    seleccionado = seleccionado,
+                    onClick = { vm.seleccionar(it) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(220.dp)
+                )
+            }
         }
     }
 }
