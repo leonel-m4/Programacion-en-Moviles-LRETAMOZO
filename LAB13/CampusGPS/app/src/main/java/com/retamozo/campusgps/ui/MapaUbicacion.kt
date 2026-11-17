@@ -62,6 +62,8 @@ fun MapaUbicacion(
 
         lugares.forEach { item ->
             key(item.lugar.id) {
+                // El ViewModel entrega la lista ordenada; aquí solo se elige el color.
+                val esMasCercano = item.metros != null && item == lugares.firstOrNull()
                 val marcador = rememberUpdatedMarkerState(
                     LatLng(item.lugar.latitud, item.lugar.longitud)
                 )
@@ -71,7 +73,11 @@ fun MapaUbicacion(
                     snippet = item.lugar.categoria,
                     contentDescription = "${item.lugar.nombre}, ${item.lugar.categoria}",
                     icon = BitmapDescriptorFactory.defaultMarker(
-                        BitmapDescriptorFactory.HUE_AZURE
+                        if (esMasCercano) {
+                            BitmapDescriptorFactory.HUE_GREEN
+                        } else {
+                            BitmapDescriptorFactory.HUE_AZURE
+                        }
                     )
                 )
 

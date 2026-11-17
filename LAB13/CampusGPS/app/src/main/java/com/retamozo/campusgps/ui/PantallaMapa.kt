@@ -14,6 +14,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -27,6 +28,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.retamozo.campusgps.model.UbicacionUi
+import com.retamozo.campusgps.util.formatearDistancia
 import com.retamozo.campusgps.viewmodel.MapaViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -35,6 +37,7 @@ fun PantallaMapa(vm: MapaViewModel) {
     val estado by vm.estado.collectAsState()
     val lugares by vm.lugares.collectAsState()
     val seleccionado by vm.seleccionado.collectAsState()
+    val masCercano by vm.masCercano.collectAsState()
     val contexto = LocalContext.current
 
     val lanzador = rememberLauncherForActivityResult(
@@ -119,6 +122,23 @@ fun PantallaMapa(vm: MapaViewModel) {
                     is UbicacionUi.Error -> Text(
                         text = actual.mensaje,
                         color = MaterialTheme.colorScheme.error
+                    )
+                }
+
+                OutlinedButton(
+                    onClick = { vm.seleccionar(masCercano?.id) },
+                    enabled = masCercano != null && estado != UbicacionUi.Buscando
+                ) {
+                    Text("Ir al más cercano")
+                }
+
+                val distanciaCercana = lugares
+                    .firstOrNull { it.lugar.id == masCercano?.id }?.metros
+                if (masCercano != null && distanciaCercana != null) {
+                    Text(
+                        text = "Más cercano: ${masCercano?.nombre} " +
+                            "(${formatearDistancia(distanciaCercana)})",
+                        style = MaterialTheme.typography.bodySmall
                     )
                 }
             }
