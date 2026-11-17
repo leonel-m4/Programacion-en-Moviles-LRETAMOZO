@@ -27,11 +27,23 @@ fun MapaUbicacion(
     }
 
     LaunchedEffect(estado) {
-        if (estado is UbicacionUi.Lista) {
+        if (estado is UbicacionUi.Lista && seleccionado == null) {
             camara.animate(
                 CameraUpdateFactory.newLatLngZoom(
                     LatLng(estado.posicion.latitud, estado.posicion.longitud),
                     16f
+                )
+            )
+        }
+    }
+
+    LaunchedEffect(seleccionado) {
+        val lugar = lugares.firstOrNull { it.lugar.id == seleccionado }?.lugar
+        if (lugar != null) {
+            camara.animate(
+                CameraUpdateFactory.newLatLngZoom(
+                    LatLng(lugar.latitud, lugar.longitud),
+                    17f
                 )
             )
         }
@@ -50,10 +62,11 @@ fun MapaUbicacion(
 
         lugares.forEach { item ->
             key(item.lugar.id) {
+                val marcador = rememberUpdatedMarkerState(
+                    LatLng(item.lugar.latitud, item.lugar.longitud)
+                )
                 Marker(
-                    state = rememberUpdatedMarkerState(
-                        LatLng(item.lugar.latitud, item.lugar.longitud)
-                    ),
+                    state = marcador,
                     title = item.lugar.nombre,
                     snippet = item.lugar.categoria,
                     contentDescription = "${item.lugar.nombre}, ${item.lugar.categoria}",
@@ -61,6 +74,12 @@ fun MapaUbicacion(
                         BitmapDescriptorFactory.HUE_AZURE
                     )
                 )
+
+                LaunchedEffect(seleccionado) {
+                    if (seleccionado == item.lugar.id) {
+                        marcador.showInfoWindow()
+                    }
+                }
             }
         }
     }
