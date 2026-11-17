@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -121,6 +122,15 @@ fun PantallaMapa(vm: MapaViewModel) {
                     )
                 }
             }
+
+            ListaLugares(
+                lugares = lugares,
+                seleccionado = seleccionado,
+                onClick = { vm.seleccionar(it) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(220.dp)
+            )
         }
     }
 }
