@@ -4,13 +4,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.retamozo.campusgps.data.LugaresRepository
 import com.retamozo.campusgps.data.UbicacionRepository
+import com.retamozo.campusgps.model.Lugar
 import com.retamozo.campusgps.model.LugarConDistancia
 import com.retamozo.campusgps.model.Posicion
 import com.retamozo.campusgps.model.UbicacionUi
 import com.retamozo.campusgps.util.distanciaMetros
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class MapaViewModel(
@@ -64,7 +68,9 @@ class MapaViewModel(
         _seleccionado.value = id
     }
 
-    // TODO Paso 7: masCercano: StateFlow<Lugar?>.
+    val masCercano: StateFlow<Lugar?> = lugares.map { lista ->
+        lista.firstOrNull { it.metros != null }?.lugar
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
     private fun mensajeDe(error: Throwable): String = when (error) {
         is SecurityException -> "Falta el permiso de ubicación"

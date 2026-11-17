@@ -49,6 +49,7 @@ fun ListaLugares(
     ) {
         items(lugares, key = { it.lugar.id }) { item ->
             val estaSeleccionado = seleccionado == item.lugar.id
+            val esMasCercano = item.metros != null && item == lugares.firstOrNull()
 
             Card(
                 onClick = { onClick(item.lugar.id) },
@@ -77,7 +78,9 @@ fun ListaLugares(
                         modifier = Modifier
                             .size(8.dp)
                             .clip(CircleShape)
-                            .background(Color(0xFF3388CC))
+                            .background(
+                                if (esMasCercano) Color(0xFF2EAA52) else Color(0xFF3388CC)
+                            )
                     )
                     Spacer(modifier = Modifier.width(8.dp))
 
