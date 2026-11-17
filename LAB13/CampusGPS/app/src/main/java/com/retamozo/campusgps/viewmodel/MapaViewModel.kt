@@ -5,7 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.retamozo.campusgps.data.LugaresRepository
 import com.retamozo.campusgps.data.UbicacionRepository
 import com.retamozo.campusgps.model.LugarConDistancia
+import com.retamozo.campusgps.model.Posicion
 import com.retamozo.campusgps.model.UbicacionUi
+import com.retamozo.campusgps.util.distanciaMetros
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -34,8 +36,8 @@ class MapaViewModel(
         viewModelScope.launch {
             ubicacionRepo.obtenerPosicion()
                 .onSuccess {
+                    actualizarDistancias(it)
                     _estado.value = UbicacionUi.Lista(it)
-                    // TODO Paso 5: actualizarDistancias(it).
                 }
                 .onFailure {
                     _estado.value = UbicacionUi.Error(mensajeDe(it))
@@ -47,6 +49,14 @@ class MapaViewModel(
         _estado.value = UbicacionUi.Error(
             "Sin permiso de ubicación no puedo mostrar dónde estás"
         )
+    }
+
+    private fun actualizarDistancias(pos: Posicion) {
+        _lugares.value = lugaresRepo.obtenerLugares()
+            .map { lugar ->
+                LugarConDistancia(lugar, distanciaMetros(pos, lugar))
+            }
+            .sortedBy { it.metros }
     }
 
     // TODO Paso 6: seleccionar(id: Int?).
