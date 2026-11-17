@@ -1,0 +1,10 @@
+<resources>
+    <style name="Theme.CampusGPS" parent="android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:statusBarColor">@color/azul_campus</item>
+        <item name="android:navigationBarColor">@color/fondo_campus</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:windowBackground">@color/fondo_campus</item>
+    </style>
+</resources>
