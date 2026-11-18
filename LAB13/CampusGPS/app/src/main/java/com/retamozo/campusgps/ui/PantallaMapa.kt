@@ -22,11 +22,15 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -44,15 +48,19 @@ fun PantallaMapa(vm: MapaViewModel) {
     val categoria by vm.categoria.collectAsState()
     val radio by vm.radio.collectAsState()
     val dentroDelRadio by vm.idsDentroDelRadio.collectAsState()
+    val siguiendo by vm.siguiendo.collectAsState()
     val seleccionado by vm.seleccionado.collectAsState()
     val masCercano by vm.masCercano.collectAsState()
     val contexto = LocalContext.current
+
+    // Qué hacer cuando Android responda al permiso: buscar una vez o seguir en vivo.
+    var seguirTrasPermiso by rememberSaveable { mutableStateOf(false) }
 
     val lanzador = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { resultado ->
         if (resultado.values.any { it }) {
-            vm.buscar()
+            if (seguirTrasPermiso) vm.iniciarSeguimiento() else vm.buscar()
         } else {
             vm.permisoDenegado()
         }
@@ -62,16 +70,32 @@ fun PantallaMapa(vm: MapaViewModel) {
     // Se vuelve a revisar cada vez que cambia el estado (por ejemplo, tras pedir el permiso).
     val tienePermiso = remember(estado) { tienePermisoUbicacion(contexto) }
 
+    val pedirPermiso: () -> Unit = {
+        lanzador.launch(
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+        )
+    }
+
+    val alPulsarSeguimiento: () -> Unit = {
+        if (siguiendo) {
+            vm.detenerSeguimiento()
+        } else if (tienePermisoUbicacion(contexto)) {
+            vm.iniciarSeguimiento()
+        } else {
+            seguirTrasPermiso = true
+            pedirPermiso()
+        }
+    }
+
     val alPulsar: () -> Unit = {
         if (tienePermisoUbicacion(contexto)) {
             vm.buscar()
         } else {
-            lanzador.launch(
-                arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                )
-            )
+            seguirTrasPermiso = false
+            pedirPermiso()
         }
     }
 
@@ -79,6 +103,14 @@ fun PantallaMapa(vm: MapaViewModel) {
         topBar = {
             TopAppBar(
                 title = { Text("CampusGPS") },
+                actions = {
+                    TextButton(onClick = alPulsarSeguimiento) {
+                        Text(
+                            text = if (siguiendo) "Detener en vivo" else "Iniciar en vivo",
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary
@@ -141,6 +173,13 @@ fun PantallaMapa(vm: MapaViewModel) {
                     is UbicacionUi.Lista -> {
                         Text("Latitud: ${actual.posicion.latitud}")
                         Text("Longitud: ${actual.posicion.longitud}")
+                        if (siguiendo) {
+                            Text(
+                                text = "Seguimiento en vivo activo",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
                     }
                     is UbicacionUi.Error -> MensajeError(
                         error = actual,

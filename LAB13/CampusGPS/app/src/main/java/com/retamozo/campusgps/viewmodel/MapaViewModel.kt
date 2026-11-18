@@ -10,10 +10,12 @@ import com.retamozo.campusgps.model.Posicion
 import com.retamozo.campusgps.model.TipoError
 import com.retamozo.campusgps.model.UbicacionUi
 import com.retamozo.campusgps.util.distanciaMetros
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -52,7 +54,14 @@ class MapaViewModel(
         comprobarPlayServices()
     }
 
+    // Mejora: seguimiento en vivo.
+    private val _siguiendo = MutableStateFlow(false)
+    val siguiendo: StateFlow<Boolean> = _siguiendo.asStateFlow()
+    private var trabajoSeguimiento: Job? = null
+
     fun buscar() {
+        // Una búsqueda puntual reemplaza al seguimiento en vivo.
+        detenerSeguimiento()
         if (_estado.value == UbicacionUi.Buscando) return
         if (!comprobarPlayServices()) return
         _seleccionado.value = null
@@ -70,7 +79,36 @@ class MapaViewModel(
         }
     }
 
+    fun iniciarSeguimiento() {
+        if (_siguiendo.value) return
+        if (!comprobarPlayServices()) return
+        _seleccionado.value = null
+        _estado.value = UbicacionUi.Buscando
+        _siguiendo.value = true
+
+        trabajoSeguimiento = viewModelScope.launch {
+            ubicacionRepo.seguirPosicion()
+                .catch { error ->
+                    _siguiendo.value = false
+                    _estado.value = UbicacionUi.Error(mensajeDe(error), tipoDe(error))
+                }
+                .collect { posicion ->
+                    actualizarDistancias(posicion)
+                    _estado.value = UbicacionUi.Lista(posicion)
+                }
+        }
+    }
+
+    fun detenerSeguimiento() {
+        trabajoSeguimiento?.cancel()
+        trabajoSeguimiento = null
+        _siguiendo.value = false
+        // Si se detiene antes de la primera posición, se vuelve al estado inicial.
+        if (_estado.value == UbicacionUi.Buscando) _estado.value = UbicacionUi.Inicial
+    }
+
     fun permisoDenegado() {
+        detenerSeguimiento()
         _estado.value = UbicacionUi.Error(
             mensaje = "Sin permiso de ubicación no puedo mostrar dónde estás",
             tipo = TipoError.SIN_PERMISO
