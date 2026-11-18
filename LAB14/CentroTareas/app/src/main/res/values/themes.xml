@@ -1,0 +1,9 @@
+<resources>
+    <style name="Theme.CentroTareas" parent="android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:statusBarColor">@color/azul_tareas</item>
+        <item name="android:navigationBarColor">@color/fondo_tareas</item>
+        <item name="android:windowBackground">@color/fondo_tareas</item>
+    </style>
+</resources>
