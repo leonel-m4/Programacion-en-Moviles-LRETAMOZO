@@ -8,6 +8,7 @@ import com.retamozo.centrotareas.model.CargaUi
 import com.retamozo.centrotareas.model.PrimosUi
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 
 class TareasViewModel(private val repo: TareasRepository) : ViewModel() {
 
@@ -136,6 +138,23 @@ class TareasViewModel(private val repo: TareasRepository) : ViewModel() {
         return bloque()
     }
 
+    // Mejora: interruptor para limitar las cargas a 2 s con withTimeout.
+    private val _tiempoMaximo = MutableStateFlow(false)
+    val tiempoMaximo: StateFlow<Boolean> = _tiempoMaximo.asStateFlow()
+
+    fun cambiarTiempoMaximo(valor: Boolean) {
+        _tiempoMaximo.value = valor
+    }
+
+    // Con el interruptor activado, toda la carga (incluidos los reintentos) tiene 2 s como máximo.
+    // Si se pasa, withTimeout lanza TimeoutCancellationException y la carga se detiene.
+    private suspend fun <T> ejecutarCarga(bloque: suspend () -> T): T =
+        if (_tiempoMaximo.value) {
+            withTimeout(TIEMPO_MAXIMO_MS) { conReintentos(bloque) }
+        } else {
+            conReintentos(bloque)
+        }
+
     // Una carga detrás de otra: 2 s + 3 s ≈ 5 s.
     fun cargarUnaPorUna() {
         if (_carga.value == CargaUi.Cargando) return
@@ -145,7 +164,7 @@ class TareasViewModel(private val repo: TareasRepository) : ViewModel() {
         viewModelScope.launch {
             val inicio = System.currentTimeMillis()
             try {
-                val (perfil, pedidos) = conReintentos {
+                val (perfil, pedidos) = ejecutarCarga {
                     val perfil = repo.cargarPerfil()
                     val pedidos = repo.cargarPedidos(_simularError.value)
                     Pair(perfil, pedidos)
@@ -158,6 +177,9 @@ class TareasViewModel(private val repo: TareasRepository) : ViewModel() {
                     pedidos = pedidos.size,
                     milisegundos = milisegundos
                 )
+            } catch (e: TimeoutCancellationException) {
+                // Va antes que CancellationException porque es un tipo de cancelación.
+                _carga.value = CargaUi.Error("Tardó demasiado")
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -176,7 +198,7 @@ class TareasViewModel(private val repo: TareasRepository) : ViewModel() {
             val inicio = System.currentTimeMillis()
             try {
                 // Si una carga falla, coroutineScope cancela la otra y lanza el error aquí.
-                val (perfil, pedidos) = conReintentos {
+                val (perfil, pedidos) = ejecutarCarga {
                     coroutineScope {
                         val perfil = async { repo.cargarPerfil() }
                         val pedidos = async { repo.cargarPedidos(_simularError.value) }
@@ -191,6 +213,9 @@ class TareasViewModel(private val repo: TareasRepository) : ViewModel() {
                     pedidos = pedidos.size,
                     milisegundos = milisegundos
                 )
+            } catch (e: TimeoutCancellationException) {
+                // Va antes que CancellationException porque es un tipo de cancelación.
+                _carga.value = CargaUi.Error("Tardó demasiado")
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -202,5 +227,6 @@ class TareasViewModel(private val repo: TareasRepository) : ViewModel() {
     companion object {
         private const val MAX_REINTENTOS = 3
         private const val ESPERA_INICIAL_MS = 500L
+        private const val TIEMPO_MAXIMO_MS = 2000L
     }
 }

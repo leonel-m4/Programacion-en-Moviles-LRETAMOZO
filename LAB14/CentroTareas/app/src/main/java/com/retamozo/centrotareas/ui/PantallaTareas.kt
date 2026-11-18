@@ -59,6 +59,7 @@ fun PantallaTareas(vm: TareasViewModel) {
     val tiemposUnaPorUna by vm.tiemposUnaPorUna.collectAsState()
     val tiemposALaVez by vm.tiemposALaVez.collectAsState()
     val reintento by vm.reintento.collectAsState()
+    val tiempoMaximo by vm.tiempoMaximo.collectAsState()
 
     // Prueba de vida: si deja de sumar, la pantalla está congelada.
     var toques by rememberSaveable { mutableIntStateOf(0) }
@@ -178,6 +179,17 @@ fun PantallaTareas(vm: TareasViewModel) {
                         onCheckedChange = { vm.cambiarSimularError(it) }
                     )
                     Text("Simular error")
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Switch(
+                        checked = tiempoMaximo,
+                        onCheckedChange = { vm.cambiarTiempoMaximo(it) }
+                    )
+                    Text("Tiempo máximo 2 s")
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     OutlinedButton(
