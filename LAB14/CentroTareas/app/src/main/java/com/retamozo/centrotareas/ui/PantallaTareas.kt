@@ -58,6 +58,7 @@ fun PantallaTareas(vm: TareasViewModel) {
     val simularError by vm.simularError.collectAsState()
     val tiemposUnaPorUna by vm.tiemposUnaPorUna.collectAsState()
     val tiemposALaVez by vm.tiemposALaVez.collectAsState()
+    val reintento by vm.reintento.collectAsState()
 
     // Prueba de vida: si deja de sumar, la pantalla está congelada.
     var toques by rememberSaveable { mutableIntStateOf(0) }
@@ -194,7 +195,10 @@ fun PantallaTareas(vm: TareasViewModel) {
                 }
                 when (val estado = carga) {
                     CargaUi.Inicial -> {}
-                    CargaUi.Cargando -> CircularProgressIndicator()
+                    CargaUi.Cargando -> {
+                        CircularProgressIndicator()
+                        if (reintento > 0) Text("Reintento $reintento de 3...")
+                    }
                     is CargaUi.Exito -> RecuadroExito(
                         "Modo: ${estado.modo}",
                         "Perfil: ${estado.perfil}",
