@@ -36,15 +36,24 @@ class TareasRepositoryLocal : TareasRepository {
     }
 
     // Cálculo pesado: va en Dispatchers.Default para no bloquear el hilo principal.
-    override suspend fun contarPrimos(hasta: Int): Int = withContext(Dispatchers.Default) {
-        var cantidad = 0
-        for (n in 2..hasta) {
-            // Permite cancelar el cálculo a mitad de camino.
-            ensureActive()
-            if (esPrimo(n)) cantidad++
+    override suspend fun contarPrimos(hasta: Int, alAvanzar: (Float) -> Unit): Int =
+        withContext(Dispatchers.Default) {
+            var cantidad = 0
+            val total = (hasta - 1).toLong()
+            var ultimoPorcentaje = -1
+            for (n in 2..hasta) {
+                // Permite cancelar el cálculo a mitad de camino.
+                ensureActive()
+                if (esPrimo(n)) cantidad++
+                // Solo avisa cuando cambia el porcentaje entero, para no saturar la pantalla.
+                val porcentaje = ((n - 1) * 100L / total).toInt()
+                if (porcentaje != ultimoPorcentaje) {
+                    ultimoPorcentaje = porcentaje
+                    alAvanzar(porcentaje / 100f)
+                }
+            }
+            cantidad
         }
-        cantidad
-    }
 
     private fun esPrimo(n: Int): Boolean {
         if (n < 2) return false
