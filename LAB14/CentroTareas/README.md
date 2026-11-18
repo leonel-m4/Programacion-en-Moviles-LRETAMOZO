@@ -147,3 +147,33 @@ Dependencia nueva: `androidx.datastore:datastore-preferences` (`1.1.1`), declara
 4. **Reintento automático:** activar **Simular error** y pulsar **A la vez**. Se ven Reintento 1, 2 y 3 de 3 y después el recuadro rojo.
 5. **Tiempo máximo:** activar **Tiempo máximo 2 s** y pulsar cualquier carga. Sale **Tardó demasiado**. Al apagarlo, las cargas vuelven a terminar bien.
 6. **Historial:** contar primos y hacer una carga, cerrar la app y volver a abrirla. Los resultados siguen en la tarjeta **Historial**, como máximo 5.
+
+### Capturas de la Fase 2
+
+#### 1. Progreso desde el Repository
+
+![Tarea al 72 % con el progreso emitido por el Flow del Repository](img/fase2_progreso_repository.png)
+
+En Logcat (filtro `HILO`) se ve `Antes: main`, `Dentro: DefaultDispatcher-worker-4` y `Despues: main`.
+
+#### 2. Primos con progreso
+
+![Cálculo de primos hasta 3000000 al 73 % con su barra de progreso](img/fase2_primos_progreso.png)
+
+#### 3. Reintento automático
+
+![Carga con Simular error mostrando Reintento 2 de 3](img/fase2_reintento.png)
+
+#### 4. Tiempo máximo
+
+![Con Tiempo máximo 2 s activado la carga termina en Tardó demasiado](img/fase2_tiempo_maximo.png)
+
+#### 5. Comparación de tiempos
+
+![Tabla con Una por una (5002 ms de promedio) y A la vez (3001 ms); A la vez ahorra 2001 ms](img/fase2_comparacion_tiempos.png)
+
+#### 6. Historial
+
+![Historial con los últimos 5 resultados después de cerrar y volver a abrir la app](img/fase2_historial.png)
+
+La captura se tomó después de cerrar la app por completo y volver a abrirla: la tabla de tiempos empieza vacía, pero el historial se mantiene porque está guardado en DataStore.
