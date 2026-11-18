@@ -8,7 +8,7 @@ Aplicación del Laboratorio 13 de Programación en Móviles. Obtiene la ubicaci�
 - **Fase 1:** rama `sprint-2`, por indicación del estudiante.
 - **Tecnologías:** Kotlin, Jetpack Compose, Material 3, Google Play Services Location y Maps Compose.
 
-El proyecto se creó siguiendo los contratos y la estructura del PDF, porque no se proporcionó el proyecto base mencionado en el enunciado. No incluye las mejoras de la Fase 2.
+El proyecto se creó siguiendo los contratos y la estructura del PDF, porque no se proporcionó el proyecto base mencionado en el enunciado. La Fase 1 está en la rama `sprint-2` y las mejoras de la Fase 2 en la rama `mejora-ia` (ver la sección **Fase 2** al final).
 
 ## Estado de la entrega
 
@@ -251,3 +251,38 @@ En `util/Distancia.kt`, mediante `Location.distanceBetween()`. El ViewModel llam
 ### 5. ¿Qué pasa si el usuario niega el permiso dos veces?
 
 Android puede dejar de mostrar el diálogo de permiso. Si la solicitud vuelve sin un permiso concedido, el ViewModel publica un error `SIN_PERMISO`. La pantalla muestra **Abrir ajustes**, que abre los ajustes de esta aplicación con `ACTION_APPLICATION_DETAILS_SETTINGS`. Desde allí el usuario puede concederlo manualmente; después debe volver y pulsar **Obtener mi ubicación**.
+
+## Fase 2 · Mejoras (rama `mejora-ia`)
+
+Se implementaron las seis mejoras de la guía. El detalle de los prompts y de las decisiones está en [PROMPTS.md](PROMPTS.md).
+
+| Mejora | Qué hace | Capas que cambian |
+| --- | --- | --- |
+| Filtrar por categoría | Chips Todas, Estudio, Comida, Eventos y Servicios. Filtran el mapa y la lista, y el más cercano se busca entre los visibles. | ViewModel + View |
+| Radio de cercanía | Selector Sin radio, 100, 200 o 500 m. Dibuja un `Circle` alrededor de la posición y marca en la lista los lugares que están dentro. | ViewModel + View |
+| Punto azul nativo | `isMyLocationEnabled` y el botón de mi ubicación del mapa, solo con el permiso concedido. | View |
+| Seguimiento en vivo | `requestLocationUpdates` convertido en `Flow` con `callbackFlow`. Se controla con el botón **Iniciar en vivo / Detener en vivo** de la barra superior. | Repository + ViewModel + View |
+| Último lugar visitado | Guarda en DataStore el último lugar seleccionado. Al abrir la app lo vuelve a seleccionar y muestra **Último visitado**. | Repository + ViewModel |
+| Mapa en modo oscuro | Con el tema oscuro del sistema, la app usa colores oscuros y el mapa usa `res/raw/mapa_oscuro.json`. | View |
+
+Archivos nuevos:
+
+```text
+data/PreferenciasRepository.kt
+data/PreferenciasRepositoryDataStore.kt
+ui/FiltroCategorias.kt
+ui/SelectorRadio.kt
+res/raw/mapa_oscuro.json
+res/values-night/colors.xml
+```
+
+Dependencia nueva: `androidx.datastore:datastore-preferences` (`1.1.1`), declarada en `gradle/libs.versions.toml`.
+
+### Cómo probar
+
+1. **Filtro:** buscar la ubicación y tocar **Comida**. Solo queda Cafetería Campus, en verde.
+2. **Radio:** con el punto base, elegir **100 m**. Aparece el círculo y Biblioteca Central (88 m) se marca como **Dentro del radio**.
+3. **Punto azul:** con el permiso concedido, se ven el punto azul y el botón de mi ubicación del mapa.
+4. **En vivo:** pulsar **Iniciar en vivo** y cambiar la ubicación del emulador. Las distancias y el lugar verde se actualizan sin volver a pulsar el botón.
+5. **Último visitado:** tocar una tarjeta, cerrar la app y volver a abrirla. La tarjeta aparece seleccionada y el mapa va hasta ese lugar.
+6. **Modo oscuro:** activar el tema oscuro del sistema y abrir la app. El mapa y la interfaz se ven oscuros.
