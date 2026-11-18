@@ -1,6 +1,7 @@
 package com.retamozo.campusgps.ui
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -25,6 +26,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -56,17 +58,12 @@ fun PantallaMapa(vm: MapaViewModel) {
         }
     }
 
-    val alPulsar: () -> Unit = {
-        val permisoFino = ContextCompat.checkSelfPermission(
-            contexto,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-        val permisoAproximado = ContextCompat.checkSelfPermission(
-            contexto,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
+    // Mejora: el punto azul nativo solo se activa si el permiso está concedido.
+    // Se vuelve a revisar cada vez que cambia el estado (por ejemplo, tras pedir el permiso).
+    val tienePermiso = remember(estado) { tienePermisoUbicacion(contexto) }
 
-        if (permisoFino || permisoAproximado) {
+    val alPulsar: () -> Unit = {
+        if (tienePermisoUbicacion(contexto)) {
             vm.buscar()
         } else {
             lanzador.launch(
@@ -117,6 +114,7 @@ fun PantallaMapa(vm: MapaViewModel) {
                     lugares = lugares,
                     seleccionado = seleccionado,
                     radio = radio,
+                    mostrarMiUbicacion = tienePermiso,
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f)
@@ -191,4 +189,16 @@ fun PantallaMapa(vm: MapaViewModel) {
             }
         }
     }
+}
+
+private fun tienePermisoUbicacion(contexto: Context): Boolean {
+    val permisoFino = ContextCompat.checkSelfPermission(
+        contexto,
+        Manifest.permission.ACCESS_FINE_LOCATION
+    ) == PackageManager.PERMISSION_GRANTED
+    val permisoAproximado = ContextCompat.checkSelfPermission(
+        contexto,
+        Manifest.permission.ACCESS_COARSE_LOCATION
+    ) == PackageManager.PERMISSION_GRANTED
+    return permisoFino || permisoAproximado
 }
