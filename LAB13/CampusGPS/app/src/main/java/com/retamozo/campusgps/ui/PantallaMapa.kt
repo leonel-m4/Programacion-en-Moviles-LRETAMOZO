@@ -49,6 +49,7 @@ fun PantallaMapa(vm: MapaViewModel) {
     val radio by vm.radio.collectAsState()
     val dentroDelRadio by vm.idsDentroDelRadio.collectAsState()
     val siguiendo by vm.siguiendo.collectAsState()
+    val ultimoVisitado by vm.ultimoVisitado.collectAsState()
     val seleccionado by vm.seleccionado.collectAsState()
     val masCercano by vm.masCercano.collectAsState()
     val contexto = LocalContext.current
@@ -210,6 +211,14 @@ fun PantallaMapa(vm: MapaViewModel) {
                             text = "Más cercano: ${masCercano?.nombre} " +
                                 "(${formatearDistancia(distanciaCercana)})",
                             style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+
+                    ultimoVisitado?.let { lugar ->
+                        Text(
+                            text = "Último visitado: ${lugar.nombre}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }

@@ -3,6 +3,7 @@ package com.retamozo.campusgps.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.retamozo.campusgps.data.LugaresRepository
+import com.retamozo.campusgps.data.PreferenciasRepository
 import com.retamozo.campusgps.data.UbicacionRepository
 import com.retamozo.campusgps.model.Lugar
 import com.retamozo.campusgps.model.LugarConDistancia
@@ -17,13 +18,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class MapaViewModel(
     private val ubicacionRepo: UbicacionRepository,
-    private val lugaresRepo: LugaresRepository
+    private val lugaresRepo: LugaresRepository,
+    private val preferenciasRepo: PreferenciasRepository
 ) : ViewModel() {
 
     private val _estado = MutableStateFlow<UbicacionUi>(UbicacionUi.Inicial)
@@ -58,6 +61,20 @@ class MapaViewModel(
     private val _siguiendo = MutableStateFlow(false)
     val siguiendo: StateFlow<Boolean> = _siguiendo.asStateFlow()
     private var trabajoSeguimiento: Job? = null
+
+    // Mejora: último lugar visitado, guardado con DataStore.
+    private val _ultimoVisitado = MutableStateFlow<Lugar?>(null)
+    val ultimoVisitado: StateFlow<Lugar?> = _ultimoVisitado.asStateFlow()
+
+    init {
+        // Al abrir la app se recupera el último lugar y se vuelve a seleccionar.
+        viewModelScope.launch {
+            val id = preferenciasRepo.ultimoLugar().first() ?: return@launch
+            val lugar = lugaresRepo.obtenerLugares().firstOrNull { it.id == id } ?: return@launch
+            _ultimoVisitado.value = lugar
+            if (_seleccionado.value == null) _seleccionado.value = lugar.id
+        }
+    }
 
     fun buscar() {
         // Una búsqueda puntual reemplaza al seguimiento en vivo.
@@ -125,6 +142,9 @@ class MapaViewModel(
 
     fun seleccionar(id: Int?) {
         _seleccionado.value = id
+        val lugar = _lugares.value.firstOrNull { it.lugar.id == id }?.lugar ?: return
+        _ultimoVisitado.value = lugar
+        viewModelScope.launch { preferenciasRepo.guardarUltimoLugar(lugar.id) }
     }
 
     // Mejora: radio de cercanía alrededor de la posición del usuario (null = sin radio).

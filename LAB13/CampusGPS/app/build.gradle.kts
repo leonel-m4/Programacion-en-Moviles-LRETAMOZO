@@ -48,4 +48,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.play.services)
     implementation(libs.maps.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+
+    // Fase 2: último lugar visitado.
+    implementation(libs.androidx.datastore.preferences)
 }
