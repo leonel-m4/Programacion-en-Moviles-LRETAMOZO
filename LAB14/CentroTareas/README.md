@@ -5,7 +5,7 @@ Aplicación del Laboratorio 14 de Programación en Móviles. Ejecuta tres tareas
 - **Estudiante:** Leonel Retamozo.
 - **Docente:** Juan León S.
 - **Paquete:** `com.retamozo.centrotareas`.
-- **Rama:** `sprint-2`.
+- **Ramas:** `sprint-2` (Fase 1) y `mejora-ia` (Fase 2, ver la sección **Fase 2** al final).
 - **Tecnologías:** Kotlin, Jetpack Compose, Material 3, corrutinas y ViewModel.
 
 Todos los datos son ficticios. No se usa `GlobalScope`, `runBlocking` ni `Thread.sleep` en el código final.
@@ -123,3 +123,27 @@ Contar primos usa mucho procesador; `Dispatchers.Default` tiene tantos hilos com
 ### 5. ¿Por qué async tarda 3 s y no 5 s? ¿Qué pasa si una de las dos cargas falla?
 
 Con `async` las dos cargas empiezan al mismo tiempo, así que el total es el de la más lenta: máximo(2 s, 3 s) ≈ 3 s. Una por una se suman: 2 s + 3 s ≈ 5 s. Si una carga falla dentro de `coroutineScope`, la otra se cancela y el error sale de `coroutineScope`; el `catch` lo convierte en `Error("No se pudo cargar: ...")` y se muestra **Reintentar**.
+
+## Fase 2 · Mejoras (rama `mejora-ia`)
+
+Se implementaron las seis mejoras de la guía, con un commit por mejora. El detalle de los prompts y de las decisiones está en [PROMPTS.md](PROMPTS.md).
+
+| Mejora | Qué hace | Capas que cambian |
+| --- | --- | --- |
+| Progreso desde el Repository | La tarea simulada pasa al Repository como `tareaConProgreso(): Flow<Float>`, con `flow { emit(...) }` y `flowOn(Dispatchers.Default)`. El ViewModel solo recoge el avance. | Repository + ViewModel |
+| Primos con progreso | `contarPrimos` avisa el porcentaje mientras cuenta. La tarjeta muestra una barra y el texto **Calculando... n %**. | Repository + ViewModel + View |
+| Comparación de tiempos | La tarjeta **Comparación de tiempos** acumula los tiempos de Una por una y A la vez: veces, último tiempo, promedio y cuánto ahorra A la vez. | ViewModel + View |
+| Reintento automático | Si una carga falla, se reintenta hasta 3 veces con esperas de 500, 1000 y 2000 ms antes de mostrar el error. Mientras tanto se ve **Reintento n de 3...**. | ViewModel + View |
+| Tiempo máximo | Con el interruptor **Tiempo máximo 2 s**, las cargas usan `withTimeout(2000)`. Si tardan más, se muestra **Tardó demasiado**. | ViewModel + View |
+| Historial de resultados | Guarda con DataStore los últimos 5 resultados (primos y cargas) y los muestra en la tarjeta **Historial** al abrir la app. | Repository + ViewModel + View |
+
+Dependencia nueva: `androidx.datastore:datastore-preferences` (`1.1.1`), declarada en `gradle/libs.versions.toml`. `TareasRepositoryLocal` ahora recibe el `Context` desde `MainActivity`. El ViewModel sigue sin recibirlo.
+
+### Cómo probar
+
+1. **Progreso desde el Repository:** pulsar **Iniciar**. La barra avanza de 0 a 100 % y Logcat (filtro `HILO`) muestra `main`, `DefaultDispatcher-worker` y `main`.
+2. **Primos con progreso:** contar con el número por defecto. La barra y el porcentaje avanzan, y **Cancelar** sigue funcionando.
+3. **Comparación de tiempos:** pulsar varias veces **Una por una** y **A la vez**. La tabla muestra unos 5000 ms contra unos 3000 ms.
+4. **Reintento automático:** activar **Simular error** y pulsar **A la vez**. Se ven Reintento 1, 2 y 3 de 3 y después el recuadro rojo.
+5. **Tiempo máximo:** activar **Tiempo máximo 2 s** y pulsar cualquier carga. Sale **Tardó demasiado**. Al apagarlo, las cargas vuelven a terminar bien.
+6. **Historial:** contar primos y hacer una carga, cerrar la app y volver a abrirla. Los resultados siguen en la tarjeta **Historial**, como máximo 5.
