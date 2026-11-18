@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -33,6 +34,18 @@ class MapaViewModel(
 
     private val _seleccionado = MutableStateFlow<Int?>(null)
     val seleccionado: StateFlow<Int?> = _seleccionado.asStateFlow()
+
+    // Mejora: filtro por categoría (null = todas).
+    val categorias: List<String> = lugaresRepo.obtenerLugares().map { it.categoria }.distinct()
+
+    private val _categoria = MutableStateFlow<String?>(null)
+    val categoria: StateFlow<String?> = _categoria.asStateFlow()
+
+    // Lo que ven el mapa y la lista: la lista ordenada con el filtro aplicado.
+    val lugaresVisibles: StateFlow<List<LugarConDistancia>> =
+        combine(_lugares, _categoria) { lista, categoria ->
+            if (categoria == null) lista else lista.filter { it.lugar.categoria == categoria }
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), _lugares.value)
 
     init {
         // Evita intentar dibujar el mapa en un dispositivo sin Play Services.
@@ -76,7 +89,17 @@ class MapaViewModel(
         _seleccionado.value = id
     }
 
-    val masCercano: StateFlow<Lugar?> = lugares.map { lista ->
+    fun filtrarCategoria(categoria: String?) {
+        _categoria.value = categoria
+        // Si el lugar seleccionado queda oculto por el filtro, se quita la selección.
+        val id = _seleccionado.value ?: return
+        val sigueVisible = categoria == null ||
+            _lugares.value.any { it.lugar.id == id && it.lugar.categoria == categoria }
+        if (!sigueVisible) _seleccionado.value = null
+    }
+
+    // El más cercano se busca entre los lugares visibles con el filtro actual.
+    val masCercano: StateFlow<Lugar?> = lugaresVisibles.map { lista ->
         lista.firstOrNull { it.metros != null }?.lugar
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 

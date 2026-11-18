@@ -38,7 +38,8 @@ import com.retamozo.campusgps.viewmodel.MapaViewModel
 @Composable
 fun PantallaMapa(vm: MapaViewModel) {
     val estado by vm.estado.collectAsState()
-    val lugares by vm.lugares.collectAsState()
+    val lugares by vm.lugaresVisibles.collectAsState()
+    val categoria by vm.categoria.collectAsState()
     val seleccionado by vm.seleccionado.collectAsState()
     val masCercano by vm.masCercano.collectAsState()
     val contexto = LocalContext.current
@@ -93,6 +94,15 @@ fun PantallaMapa(vm: MapaViewModel) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (estado !is UbicacionUi.Error) {
+                FiltroCategorias(
+                    categorias = vm.categorias,
+                    seleccionada = categoria,
+                    onSeleccionar = { vm.filtrarCategoria(it) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 4.dp)
+                )
+
                 MapaUbicacion(
                     estado = estado,
                     lugares = lugares,
