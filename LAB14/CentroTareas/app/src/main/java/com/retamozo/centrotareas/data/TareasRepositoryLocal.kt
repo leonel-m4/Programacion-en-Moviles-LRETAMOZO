@@ -1,6 +1,10 @@
 package com.retamozo.centrotareas.data
 
+import android.content.Context
 import android.util.Log
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
 import java.io.IOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -8,12 +12,37 @@ import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+
+// Un solo DataStore para toda la app, guardado en el archivo "historial".
+private val Context.dataStore by preferencesDataStore(name = "historial")
 
 /**
  * Cargas simuladas con delay. Los datos son ficticios.
  */
-class TareasRepositoryLocal : TareasRepository {
+class TareasRepositoryLocal(private val context: Context) : TareasRepository {
+
+    // Los resultados se guardan en una sola cadena, uno por línea.
+    override val historial: Flow<List<String>> = context.dataStore.data.map { preferencias ->
+        leerLista(preferencias[CLAVE_HISTORIAL])
+    }
+
+    override suspend fun guardarEnHistorial(resultado: String) {
+        try {
+            context.dataStore.edit { preferencias ->
+                val actual = leerLista(preferencias[CLAVE_HISTORIAL])
+                preferencias[CLAVE_HISTORIAL] =
+                    (listOf(resultado) + actual).take(MAX_HISTORIAL).joinToString(SEPARADOR)
+            }
+        } catch (e: IOException) {
+            // Si no se puede escribir, la app sigue funcionando sin guardar ese resultado.
+            Log.e("HISTORIAL", "No se pudo guardar el resultado", e)
+        }
+    }
+
+    private fun leerLista(texto: String?): List<String> =
+        texto?.split(SEPARADOR)?.filter { it.isNotBlank() } ?: emptyList()
 
     // 100 vueltas de 40 ms (unos 4 s). flowOn hace que las emisiones corran en Dispatchers.Default.
     override fun tareaConProgreso(): Flow<Float> = flow {
@@ -64,5 +93,11 @@ class TareasRepositoryLocal : TareasRepository {
             d++
         }
         return true
+    }
+
+    private companion object {
+        val CLAVE_HISTORIAL = stringPreferencesKey("ultimos_resultados")
+        const val SEPARADOR = "\n"
+        const val MAX_HISTORIAL = 5
     }
 }

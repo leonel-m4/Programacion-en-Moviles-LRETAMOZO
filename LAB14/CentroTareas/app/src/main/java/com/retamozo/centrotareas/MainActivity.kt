@@ -17,7 +17,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val fabrica = TareasViewModelFactory(TareasRepositoryLocal())
+        val fabrica = TareasViewModelFactory(TareasRepositoryLocal(applicationContext))
 
         setContent {
             CentroTareasTheme {

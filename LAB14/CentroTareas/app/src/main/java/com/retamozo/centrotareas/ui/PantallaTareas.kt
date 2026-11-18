@@ -60,6 +60,7 @@ fun PantallaTareas(vm: TareasViewModel) {
     val tiemposALaVez by vm.tiemposALaVez.collectAsState()
     val reintento by vm.reintento.collectAsState()
     val tiempoMaximo by vm.tiempoMaximo.collectAsState()
+    val historial by vm.historial.collectAsState()
 
     // Prueba de vida: si deja de sumar, la pantalla está congelada.
     var toques by rememberSaveable { mutableIntStateOf(0) }
@@ -239,6 +240,22 @@ fun PantallaTareas(vm: TareasViewModel) {
 
             Tarjeta(titulo = "Comparación de tiempos") {
                 TablaTiempos(tiemposUnaPorUna, tiemposALaVez)
+            }
+
+            Tarjeta(titulo = "Historial (últimos 5)") {
+                if (historial.isEmpty()) {
+                    Text(
+                        text = "Sin resultados guardados.",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                } else {
+                    historial.forEachIndexed { indice, resultado ->
+                        Text(
+                            text = "${indice + 1}. $resultado",
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                }
             }
         }
     }

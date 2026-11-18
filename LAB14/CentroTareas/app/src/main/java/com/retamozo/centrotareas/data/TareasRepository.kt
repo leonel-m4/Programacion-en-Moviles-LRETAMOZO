@@ -10,4 +10,8 @@ interface TareasRepository {
     suspend fun contarPrimos(hasta: Int, alAvanzar: (Float) -> Unit = {}): Int
     suspend fun cargarPerfil(): String
     suspend fun cargarPedidos(simularError: Boolean): List<String>
+
+    // Mejora: los últimos 5 resultados guardados con DataStore (el más reciente primero).
+    val historial: Flow<List<String>>
+    suspend fun guardarEnHistorial(resultado: String)
 }

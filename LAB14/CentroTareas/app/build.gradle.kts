@@ -34,4 +34,7 @@ dependencies {
 
     // Dependencia indicada en el laboratorio. Las corrutinas y viewModelScope vienen con ella.
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+
+    // Mejora: historial de resultados guardado con DataStore.
+    implementation(libs.androidx.datastore.preferences)
 }

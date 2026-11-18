@@ -13,12 +13,21 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 
 class TareasViewModel(private val repo: TareasRepository) : ViewModel() {
+
+    // Mejora: últimos 5 resultados guardados con DataStore. Se muestran al abrir la app.
+    val historial: StateFlow<List<String>> = repo.historial.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
 
     // ----- Tarea con progreso (pasos 1 a 4)
     private val _mensaje = MutableStateFlow("Listo")
@@ -83,7 +92,9 @@ class TareasViewModel(private val repo: TareasRepository) : ViewModel() {
                 val cantidad = repo.contarPrimos(hasta) { avance ->
                     _progresoPrimos.value = avance
                 }
-                _primos.value = PrimosUi.Listo(cantidad, System.currentTimeMillis() - inicio)
+                val milisegundos = System.currentTimeMillis() - inicio
+                _primos.value = PrimosUi.Listo(cantidad, milisegundos)
+                repo.guardarEnHistorial("Primos hasta $hasta: $cantidad ($milisegundos ms)")
             } catch (e: CancellationException) {
                 _primos.value = PrimosUi.Cancelado
                 // Se vuelve a lanzar para no romper la cancelación.
@@ -177,6 +188,7 @@ class TareasViewModel(private val repo: TareasRepository) : ViewModel() {
                     pedidos = pedidos.size,
                     milisegundos = milisegundos
                 )
+                repo.guardarEnHistorial("Una por una: ${pedidos.size} pedidos ($milisegundos ms)")
             } catch (e: TimeoutCancellationException) {
                 // Va antes que CancellationException porque es un tipo de cancelación.
                 _carga.value = CargaUi.Error("Tardó demasiado")
@@ -213,6 +225,7 @@ class TareasViewModel(private val repo: TareasRepository) : ViewModel() {
                     pedidos = pedidos.size,
                     milisegundos = milisegundos
                 )
+                repo.guardarEnHistorial("A la vez: ${pedidos.size} pedidos ($milisegundos ms)")
             } catch (e: TimeoutCancellationException) {
                 // Va antes que CancellationException porque es un tipo de cancelación.
                 _carga.value = CargaUi.Error("Tardó demasiado")
