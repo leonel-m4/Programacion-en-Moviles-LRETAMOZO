@@ -105,6 +105,13 @@ class TareasViewModel(private val repo: TareasRepository) : ViewModel() {
         _simularError.value = valor
     }
 
+    // Mejora: tiempos acumulados de cada modo para compararlos en una tabla.
+    private val _tiemposUnaPorUna = MutableStateFlow<List<Long>>(emptyList())
+    val tiemposUnaPorUna: StateFlow<List<Long>> = _tiemposUnaPorUna.asStateFlow()
+
+    private val _tiemposALaVez = MutableStateFlow<List<Long>>(emptyList())
+    val tiemposALaVez: StateFlow<List<Long>> = _tiemposALaVez.asStateFlow()
+
     // Una carga detrás de otra: 2 s + 3 s ≈ 5 s.
     fun cargarUnaPorUna() {
         if (_carga.value == CargaUi.Cargando) return
@@ -115,11 +122,13 @@ class TareasViewModel(private val repo: TareasRepository) : ViewModel() {
             try {
                 val perfil = repo.cargarPerfil()
                 val pedidos = repo.cargarPedidos(_simularError.value)
+                val milisegundos = System.currentTimeMillis() - inicio
+                _tiemposUnaPorUna.value = _tiemposUnaPorUna.value + milisegundos
                 _carga.value = CargaUi.Exito(
                     modo = "Una por una",
                     perfil = perfil,
                     pedidos = pedidos.size,
-                    milisegundos = System.currentTimeMillis() - inicio
+                    milisegundos = milisegundos
                 )
             } catch (e: CancellationException) {
                 throw e
@@ -143,11 +152,13 @@ class TareasViewModel(private val repo: TareasRepository) : ViewModel() {
                     val pedidos = async { repo.cargarPedidos(_simularError.value) }
                     Pair(perfil.await(), pedidos.await())
                 }
+                val milisegundos = System.currentTimeMillis() - inicio
+                _tiemposALaVez.value = _tiemposALaVez.value + milisegundos
                 _carga.value = CargaUi.Exito(
                     modo = "A la vez",
                     perfil = perfil,
                     pedidos = pedidos.size,
-                    milisegundos = System.currentTimeMillis() - inicio
+                    milisegundos = milisegundos
                 )
             } catch (e: CancellationException) {
                 throw e

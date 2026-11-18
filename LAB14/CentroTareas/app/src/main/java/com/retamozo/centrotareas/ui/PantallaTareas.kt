@@ -56,6 +56,8 @@ fun PantallaTareas(vm: TareasViewModel) {
     val progresoPrimos by vm.progresoPrimos.collectAsState()
     val carga by vm.carga.collectAsState()
     val simularError by vm.simularError.collectAsState()
+    val tiemposUnaPorUna by vm.tiemposUnaPorUna.collectAsState()
+    val tiemposALaVez by vm.tiemposALaVez.collectAsState()
 
     // Prueba de vida: si deja de sumar, la pantalla está congelada.
     var toques by rememberSaveable { mutableIntStateOf(0) }
@@ -218,7 +220,64 @@ fun PantallaTareas(vm: TareasViewModel) {
                     }
                 }
             }
+
+            Tarjeta(titulo = "Comparación de tiempos") {
+                TablaTiempos(tiemposUnaPorUna, tiemposALaVez)
+            }
         }
+    }
+}
+
+// Tabla con los tiempos acumulados de cada modo y la diferencia entre los promedios.
+@Composable
+private fun TablaTiempos(unaPorUna: List<Long>, aLaVez: List<Long>) {
+    if (unaPorUna.isEmpty() && aLaVez.isEmpty()) {
+        Text(
+            text = "Aún no hay tiempos. Usa los botones de Dos cargas.",
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        return
+    }
+    FilaTabla("Modo", "Veces", "Último", "Promedio", negrita = true)
+    FilaTabla(
+        "Una por una",
+        "${unaPorUna.size}",
+        unaPorUna.lastOrNull()?.let { "$it ms" } ?: "-",
+        promedio(unaPorUna)?.let { "$it ms" } ?: "-"
+    )
+    FilaTabla(
+        "A la vez",
+        "${aLaVez.size}",
+        aLaVez.lastOrNull()?.let { "$it ms" } ?: "-",
+        promedio(aLaVez)?.let { "$it ms" } ?: "-"
+    )
+    val promedioUna = promedio(unaPorUna)
+    val promedioVez = promedio(aLaVez)
+    if (promedioUna != null && promedioVez != null) {
+        Text(
+            text = "A la vez ahorra ${promedioUna - promedioVez} ms en promedio",
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+private fun promedio(tiempos: List<Long>): Long? =
+    if (tiempos.isEmpty()) null else tiempos.sum() / tiempos.size
+
+@Composable
+private fun FilaTabla(
+    modo: String,
+    veces: String,
+    ultimo: String,
+    promedio: String,
+    negrita: Boolean = false
+) {
+    val peso = if (negrita) FontWeight.Bold else FontWeight.Normal
+    Row(modifier = Modifier.fillMaxWidth()) {
+        Text(modo, modifier = Modifier.weight(1.4f), fontWeight = peso)
+        Text(veces, modifier = Modifier.weight(0.8f), fontWeight = peso, textAlign = TextAlign.End)
+        Text(ultimo, modifier = Modifier.weight(1.1f), fontWeight = peso, textAlign = TextAlign.End)
+        Text(promedio, modifier = Modifier.weight(1.1f), fontWeight = peso, textAlign = TextAlign.End)
     }
 }
 
