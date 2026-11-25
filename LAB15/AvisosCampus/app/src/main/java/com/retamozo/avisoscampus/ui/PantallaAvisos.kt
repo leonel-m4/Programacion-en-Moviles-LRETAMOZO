@@ -56,6 +56,7 @@ fun PantallaAvisos(vm: AvisosViewModel) {
         }
     }
 
+    val avisos by vm.avisos.collectAsState()
     val permiso by vm.permiso.collectAsState()
     val faltan by vm.faltan.collectAsState()
     val escuchando by vm.escuchandoAvion.collectAsState()
@@ -162,7 +163,7 @@ fun PantallaAvisos(vm: AvisosViewModel) {
                 }
             }
 
-            // TODO Paso 7: HistorialAvisos(avisos)
+            HistorialAvisos(avisos)
         }
     }
 }
