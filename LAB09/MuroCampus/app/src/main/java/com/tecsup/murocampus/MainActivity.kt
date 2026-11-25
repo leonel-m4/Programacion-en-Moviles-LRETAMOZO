@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -22,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.tecsup.murocampus.data.PostRepositoryRemote
 import com.tecsup.murocampus.data.remote.RetrofitClient
+import com.tecsup.murocampus.ui.PantallaCrear
 import com.tecsup.murocampus.ui.PantallaDetalle
 import com.tecsup.murocampus.ui.PantallaLista
 import com.tecsup.murocampus.ui.theme.MuroCampusTheme
@@ -43,8 +45,12 @@ class MainActivity : ComponentActivity() {
 
                 // null = se ve la lista; un id = se ve el detalle de esa publicación.
                 var idSeleccionado by rememberSaveable { mutableStateOf<Int?>(null) }
+                // true = se ve la pantalla para crear una publicación.
+                var creando by rememberSaveable { mutableStateOf(false) }
 
-                BackHandler(enabled = idSeleccionado != null) { idSeleccionado = null }
+                BackHandler(enabled = idSeleccionado != null || creando) {
+                    if (creando) creando = false else idSeleccionado = null
+                }
 
                 Scaffold(
                     topBar = {
@@ -55,11 +61,20 @@ class MainActivity : ComponentActivity() {
                                 titleContentColor = MaterialTheme.colorScheme.onPrimary
                             )
                         )
+                    },
+                    floatingActionButton = {
+                        if (idSeleccionado == null && !creando) {
+                            FloatingActionButton(onClick = { creando = true }) {
+                                Text("+", style = MaterialTheme.typography.headlineSmall)
+                            }
+                        }
                     }
                 ) { espacio ->
                     Box(Modifier.fillMaxSize().padding(espacio)) {
                         val id = idSeleccionado
-                        if (id == null) {
+                        if (creando) {
+                            PantallaCrear(vm = vm)
+                        } else if (id == null) {
                             PantallaLista(
                                 vm = vm,
                                 onAbrir = { idPost ->
