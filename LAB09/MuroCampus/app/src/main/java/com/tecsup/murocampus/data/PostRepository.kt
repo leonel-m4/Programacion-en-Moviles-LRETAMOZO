@@ -10,6 +10,7 @@ import kotlin.coroutines.cancellation.CancellationException
 
 interface PostRepository {
     suspend fun listar(): Result<List<Post>>
+    suspend fun pagina(inicio: Int, limite: Int): Result<List<Post>>
     suspend fun detalle(id: Int): Result<Post>
     suspend fun comentarios(id: Int): Result<List<Comentario>>
     suspend fun porUsuario(userId: Int): Result<List<Post>>
@@ -21,6 +22,9 @@ interface PostRepository {
 class PostRepositoryRemote(private val api: PostApi) : PostRepository {
 
     override suspend fun listar(): Result<List<Post>> = llamar { api.listar() }
+
+    override suspend fun pagina(inicio: Int, limite: Int): Result<List<Post>> =
+        llamar { api.pagina(inicio, limite) }
 
     override suspend fun detalle(id: Int): Result<Post> = llamar { api.detalle(id) }
 

@@ -56,6 +56,19 @@ class PostsViewModel(private val repo: PostRepository) : ViewModel() {
     private val _editado = MutableStateFlow<UiState<Post>?>(null)
     val editado = _editado.asStateFlow()
 
+    // Paginación (solo con el filtro Todos): de 20 en 20.
+    private val _hayMas = MutableStateFlow(false)
+    val hayMas = _hayMas.asStateFlow()
+
+    private val _cargandoMas = MutableStateFlow(false)
+    val cargandoMas = _cargandoMas.asStateFlow()
+
+    // Mensaje si falla Cargar más; la lista ya mostrada se conserva.
+    private val _errorMas = MutableStateFlow<String?>(null)
+    val errorMas = _errorMas.asStateFlow()
+
+    private var siguienteInicio = 0
+
     private var trabajoLista: Job? = null
     private var trabajoDetalle: Job? = null
 
@@ -65,11 +78,39 @@ class PostsViewModel(private val repo: PostRepository) : ViewModel() {
         trabajoLista?.cancel()
         trabajoLista = viewModelScope.launch {
             _lista.value = UiState.Cargando
+            _hayMas.value = false
+            _cargandoMas.value = false
+            _errorMas.value = null
             val userId = _usuarioFiltro.value
-            val resultado = if (userId == null) repo.listar() else repo.porUsuario(userId)
+            val resultado = if (userId == null) repo.pagina(0, TAMANO_PAGINA) else repo.porUsuario(userId)
             resultado
-                .onSuccess { _lista.value = UiState.Exito(it) }
+                .onSuccess { posts ->
+                    _lista.value = UiState.Exito(posts)
+                    if (userId == null) {
+                        siguienteInicio = posts.size
+                        _hayMas.value = posts.size == TAMANO_PAGINA
+                    }
+                }
                 .onFailure { _lista.value = UiState.Error(mensajeDe(it)) }
+        }
+    }
+
+    fun cargarMas() {
+        val actual = _lista.value
+        if (actual !is UiState.Exito || _cargandoMas.value || !_hayMas.value) return
+        trabajoLista = viewModelScope.launch {
+            _cargandoMas.value = true
+            _errorMas.value = null
+            repo.pagina(siguienteInicio, TAMANO_PAGINA)
+                .onSuccess { nuevos ->
+                    siguienteInicio += nuevos.size
+                    val ahora = _lista.value
+                    val previos = if (ahora is UiState.Exito) ahora.datos else actual.datos
+                    _lista.value = UiState.Exito((previos + nuevos).distinctBy { it.id })
+                    _hayMas.value = nuevos.size == TAMANO_PAGINA
+                }
+                .onFailure { _errorMas.value = mensajeDe(it) }
+            _cargandoMas.value = false
         }
     }
 
@@ -161,5 +202,9 @@ class PostsViewModel(private val repo: PostRepository) : ViewModel() {
     // La pantalla avisa que ya mostró el resultado del borrado.
     fun limpiarBorrado() {
         _borrado.value = null
+    }
+
+    private companion object {
+        const val TAMANO_PAGINA = 20
     }
 }

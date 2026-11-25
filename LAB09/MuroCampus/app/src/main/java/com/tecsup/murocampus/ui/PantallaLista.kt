@@ -10,6 +10,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.MaterialTheme
@@ -19,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tecsup.murocampus.viewmodel.PostsViewModel
@@ -29,6 +33,9 @@ fun PantallaLista(vm: PostsViewModel, onAbrir: (Int) -> Unit) {
     val estado by vm.visibles.collectAsStateWithLifecycle()
     val usuarioFiltro by vm.usuarioFiltro.collectAsStateWithLifecycle()
     val busqueda by vm.busqueda.collectAsStateWithLifecycle()
+    val hayMas by vm.hayMas.collectAsStateWithLifecycle()
+    val cargandoMas by vm.cargandoMas.collectAsStateWithLifecycle()
+    val errorMas by vm.errorMas.collectAsStateWithLifecycle()
 
     Column(Modifier.fillMaxSize()) {
         FilaFiltro(seleccionado = usuarioFiltro, onElegir = { vm.filtrar(it) })
@@ -47,7 +54,7 @@ fun PantallaLista(vm: PostsViewModel, onAbrir: (Int) -> Unit) {
             when (val e = estado) {
                 UiState.Cargando -> Cargando()
                 is UiState.Error -> ErrorConReintento(e.mensaje, onReintentar = { vm.cargar() })
-                is UiState.Exito -> if (e.datos.isEmpty()) {
+                is UiState.Exito -> if (e.datos.isEmpty() && !hayMas) {
                     Text(
                         text = "Sin publicaciones",
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -67,6 +74,31 @@ fun PantallaLista(vm: PostsViewModel, onAbrir: (Int) -> Unit) {
                                 maxLines = 2,
                                 onClick = { onAbrir(post.id) }
                             )
+                        }
+                        if (hayMas) {
+                            item {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 8.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    errorMas?.let { mensaje ->
+                                        Text(
+                                            text = mensaje,
+                                            color = MaterialTheme.colorScheme.error,
+                                            style = MaterialTheme.typography.bodySmall,
+                                            textAlign = TextAlign.Center
+                                        )
+                                    }
+                                    if (cargandoMas) {
+                                        CircularProgressIndicator(Modifier.size(32.dp))
+                                    } else {
+                                        Button(onClick = { vm.cargarMas() }) { Text("Cargar más") }
+                                    }
+                                }
+                            }
                         }
                     }
                 }

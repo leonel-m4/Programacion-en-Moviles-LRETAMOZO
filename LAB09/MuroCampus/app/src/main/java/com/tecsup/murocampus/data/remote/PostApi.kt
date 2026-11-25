@@ -17,6 +17,10 @@ interface PostApi {
     @GET("posts")
     suspend fun listar(): List<Post>
 
+    // Paginación: desde la posición _start, como máximo _limit publicaciones.
+    @GET("posts")
+    suspend fun pagina(@Query("_start") inicio: Int, @Query("_limit") limite: Int): List<Post>
+
     @GET("posts/{id}")
     suspend fun detalle(@Path("id") id: Int): Post
 
