@@ -11,13 +11,18 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Inbox
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -28,9 +33,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tecsup.murocampus.viewmodel.PostsViewModel
 import com.tecsup.murocampus.viewmodel.UiState
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PantallaLista(vm: PostsViewModel, onAbrir: (Int) -> Unit) {
     val estado by vm.visibles.collectAsStateWithLifecycle()
+    val listaEstado by vm.lista.collectAsStateWithLifecycle()
     val usuarioFiltro by vm.usuarioFiltro.collectAsStateWithLifecycle()
     val busqueda by vm.busqueda.collectAsStateWithLifecycle()
     val hayMas by vm.hayMas.collectAsStateWithLifecycle()
@@ -55,47 +62,65 @@ fun PantallaLista(vm: PostsViewModel, onAbrir: (Int) -> Unit) {
                 UiState.Cargando -> Cargando()
                 is UiState.Error -> ErrorConReintento(e.mensaje, onReintentar = { vm.cargar() })
                 is UiState.Exito -> if (e.datos.isEmpty() && !hayMas) {
-                    Text(
-                        text = "Sin publicaciones",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                } else {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(12.dp),
+                    Column(
+                        modifier = Modifier.align(Alignment.Center),
+                        horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        items(e.datos, key = { it.id }) { post ->
-                            TarjetaPost(
-                                userId = post.userId,
-                                titulo = post.title,
-                                texto = post.body,
-                                maxLines = 2,
-                                onClick = { onAbrir(post.id) }
-                            )
-                        }
-                        if (hayMas) {
-                            item {
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(vertical = 8.dp),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                                ) {
-                                    errorMas?.let { mensaje ->
-                                        Text(
-                                            text = mensaje,
-                                            color = MaterialTheme.colorScheme.error,
-                                            style = MaterialTheme.typography.bodySmall,
-                                            textAlign = TextAlign.Center
-                                        )
-                                    }
-                                    if (cargandoMas) {
-                                        CircularProgressIndicator(Modifier.size(32.dp))
-                                    } else {
-                                        Button(onClick = { vm.cargarMas() }) { Text("Cargar más") }
+                        Icon(
+                            imageVector = Icons.Outlined.Inbox,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(64.dp)
+                        )
+                        Text(
+                            text = "Sin publicaciones",
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                } else {
+                    PullToRefreshBox(
+                        isRefreshing = listaEstado is UiState.Cargando,
+                        onRefresh = { vm.cargar() },
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(12.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            items(e.datos, key = { it.id }) { post ->
+                                TarjetaPost(
+                                    userId = post.userId,
+                                    titulo = post.title,
+                                    texto = post.body,
+                                    maxLines = 2,
+                                    modifier = Modifier.animateItem(),
+                                    onClick = { onAbrir(post.id) }
+                                )
+                            }
+                            if (hayMas) {
+                                item(key = "loading_more") {
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = 8.dp),
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        errorMas?.let { mensaje ->
+                                            Text(
+                                                text = mensaje,
+                                                color = MaterialTheme.colorScheme.error,
+                                                style = MaterialTheme.typography.bodySmall,
+                                                textAlign = TextAlign.Center
+                                            )
+                                        }
+                                        if (cargandoMas) {
+                                            CircularProgressIndicator(Modifier.size(32.dp))
+                                        } else {
+                                            Button(onClick = { vm.cargarMas() }) { Text("Cargar más") }
+                                        }
                                     }
                                 }
                             }

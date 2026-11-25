@@ -22,6 +22,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -34,6 +35,7 @@ import com.tecsup.murocampus.viewmodel.UiState
 @Composable
 fun PantallaEditar(vm: PostsViewModel, id: Int, tituloActual: String) {
     val estado by vm.editado.collectAsStateWithLifecycle()
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     var titulo by rememberSaveable(id) { mutableStateOf(tituloActual) }
     val enviando = estado == UiState.Cargando
@@ -51,14 +53,27 @@ fun PantallaEditar(vm: PostsViewModel, id: Int, tituloActual: String) {
             fontWeight = FontWeight.Bold,
             modifier = Modifier.fillMaxWidth()
         )
-        OutlinedTextField(
-            value = titulo,
-            onValueChange = { titulo = it },
-            label = { Text("Título") },
-            modifier = Modifier.fillMaxWidth()
-        )
+        Column(modifier = Modifier.fillMaxWidth()) {
+            OutlinedTextField(
+                value = titulo,
+                onValueChange = { if (it.length <= 100) titulo = it },
+                label = { Text("Título") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Text(
+                text = "${titulo.length}/100",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .padding(top = 4.dp)
+            )
+        }
         Button(
-            onClick = { vm.editarTitulo(id, titulo.trim()) },
+            onClick = {
+                keyboardController?.hide()
+                vm.editarTitulo(id, titulo.trim())
+            },
             enabled = titulo.isNotBlank() && !enviando
         ) {
             Text("Guardar")

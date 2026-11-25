@@ -24,6 +24,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -36,6 +37,7 @@ import com.tecsup.murocampus.viewmodel.UiState
 @Composable
 fun PantallaCrear(vm: PostsViewModel) {
     val estado by vm.creado.collectAsStateWithLifecycle()
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     var titulo by rememberSaveable { mutableStateOf("") }
     var contenido by rememberSaveable { mutableStateOf("") }
@@ -58,13 +60,23 @@ fun PantallaCrear(vm: PostsViewModel) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        OutlinedTextField(
-            value = titulo,
-            onValueChange = { titulo = it },
-            label = { Text("Título") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth()
-        )
+        Column(modifier = Modifier.fillMaxWidth()) {
+            OutlinedTextField(
+                value = titulo,
+                onValueChange = { if (it.length <= 100) titulo = it },
+                label = { Text("Título") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Text(
+                text = "${titulo.length}/100",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .padding(top = 4.dp)
+            )
+        }
         OutlinedTextField(
             value = contenido,
             onValueChange = { contenido = it },
@@ -74,7 +86,10 @@ fun PantallaCrear(vm: PostsViewModel) {
                 .height(120.dp)
         )
         Button(
-            onClick = { vm.publicar(titulo, contenido) },
+            onClick = {
+                keyboardController?.hide()
+                vm.publicar(titulo, contenido)
+            },
             enabled = titulo.isNotBlank() && contenido.isNotBlank() && !enviando
         ) {
             Text("Publicar")

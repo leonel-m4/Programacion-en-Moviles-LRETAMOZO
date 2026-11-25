@@ -8,8 +8,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -54,7 +58,7 @@ class MainActivity : ComponentActivity() {
                 // Título con el que se abre la edición; null = no se está editando.
                 var tituloEditar by rememberSaveable { mutableStateOf<String?>(null) }
 
-                BackHandler(enabled = idSeleccionado != null || creando) {
+                BackHandler(enabled = idSeleccionado != null || creando || tituloEditar != null) {
                     when {
                         creando -> creando = false
                         tituloEditar != null -> tituloEditar = null
@@ -62,10 +66,36 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
+                val tituloBarra = when {
+                    creando -> "Nueva publicación"
+                    tituloEditar != null -> "Editar publicación"
+                    idSeleccionado != null -> "Detalle"
+                    else -> "MuroCampus"
+                }
+
+                val mostrarAtras = creando || idSeleccionado != null || tituloEditar != null
+
                 Scaffold(
                     topBar = {
                         TopAppBar(
-                            title = { Text("MuroCampus") },
+                            title = { Text(tituloBarra) },
+                            navigationIcon = {
+                                if (mostrarAtras) {
+                                    IconButton(onClick = {
+                                        when {
+                                            creando -> creando = false
+                                            tituloEditar != null -> tituloEditar = null
+                                            else -> idSeleccionado = null
+                                        }
+                                    }) {
+                                        Icon(
+                                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                            contentDescription = "Atrás",
+                                            tint = MaterialTheme.colorScheme.onPrimary
+                                        )
+                                    }
+                                }
+                            },
                             colors = TopAppBarDefaults.topAppBarColors(
                                 containerColor = MaterialTheme.colorScheme.primary,
                                 titleContentColor = MaterialTheme.colorScheme.onPrimary
@@ -73,7 +103,7 @@ class MainActivity : ComponentActivity() {
                         )
                     },
                     floatingActionButton = {
-                        if (idSeleccionado == null && !creando) {
+                        if (idSeleccionado == null && !creando && tituloEditar == null) {
                             FloatingActionButton(onClick = { creando = true }) {
                                 Text("+", style = MaterialTheme.typography.headlineSmall)
                             }
