@@ -5,7 +5,7 @@ Aplicación del Laboratorio 09 (Servicios Web y plataforma REST) de Programació
 - **Estudiante:** Leonel Retamozo.
 - **Docente:** Juan José León S.
 - **Paquete:** `com.tecsup.murocampus`.
-- **Rama:** `sprint-2`.
+- **Ramas:** `sprint-2` (Fase 1) y `mejora-ia` (Fase 2).
 - **Tecnologías:** Kotlin, Jetpack Compose, Material 3, ViewModel, corrutinas, Retrofit, OkHttp y kotlinx.serialization.
 
 Los textos de las publicaciones están en latín de relleno (*lorem ipsum*): son datos de práctica.
@@ -21,6 +21,10 @@ app/src/main/java/com/tecsup/murocampus/
 │   ├── remote/
 │   │   ├── PostApi.kt              interface de Retrofit
 │   │   └── RetrofitClient.kt       Retrofit + OkHttp + conversor JSON
+│   ├── local/                      (Fase 2) caché en Room
+│   │   ├── PostEntity.kt
+│   │   ├── PostDao.kt
+│   │   └── MuroDatabase.kt
 │   └── PostRepository.kt           interface + PostRepositoryRemote
 ├── viewmodel/
 │   ├── UiState.kt                  Cargando / Exito / Error y mensajeDe
@@ -31,6 +35,7 @@ app/src/main/java/com/tecsup/murocampus/
     ├── PantallaLista.kt
     ├── PantallaDetalle.kt
     ├── PantallaCrear.kt
+    ├── PantallaEditar.kt           (Fase 2)
     └── theme/
 ```
 
@@ -101,6 +106,48 @@ Capturas reales tomadas en un Motorola Moto G20.
 | Filtro | Elegir cada usuario | Siempre 10 publicaciones | ☐ |
 | Crear | Enviar una publicación | **Publicado con id 101** (en Logcat: `POST` con el JSON y respuesta 201) | ✅ |
 | Código | Revisar `viewmodel/` | No hay Retrofit, `PostApi` ni `HttpException` | ☐ |
+
+## Fase 2: mejoras (rama `mejora-ia`)
+
+Se hicieron las 6 mejoras de la guía, una por commit, sin romper MVVM + Repository: el ViewModel sigue sin conocer Retrofit, `PostApi`, `HttpException` ni `Context`, y ninguna pantalla llama a la API.
+
+| Mejora | Qué hace | Capas que cambian |
+| --- | --- | --- |
+| Encabezado con interceptor | Un `Interceptor` de OkHttp agrega `Accept: application/json` a todas las peticiones | RetrofitClient |
+| Búsqueda | Campo **Buscar por título** que filtra las publicaciones ya descargadas, sin pedir nada a la red | ViewModel + View |
+| Borrar publicación | Botón **Eliminar** en el detalle con `@DELETE("posts/{id}")`; el Repository revisa el código con `Response<Unit>` y, si no es 2xx, devuelve `Result.failure(HttpException)` | API + Repository + ViewModel + View |
+| Editar con PATCH | Botón **Editar** en el detalle; `@PATCH("posts/{id}")` envía solo `{"title": ...}` y se muestra la respuesta del servidor | API + Repository + ViewModel + View |
+| Paginación simple | Con **Todos** carga de 20 en 20 con `@Query("_start")` y `@Query("_limit")` y el botón **Cargar más** | API + Repository + ViewModel + View |
+| Caché en Room | El Repository guarda en Room lo que llega de la red; si no hay conexión (`IOException`), decide mostrar lo guardado | Repository + Room |
+
+Nuevos archivos: `data/local/PostEntity.kt`, `data/local/PostDao.kt`, `data/local/MuroDatabase.kt` y `ui/PantallaEditar.kt`.
+
+Como JSONPlaceholder no guarda los cambios, al borrar o editar la app actualiza la lista ya descargada y Room con la respuesta del servidor.
+
+### Capturas de la Fase 2
+
+| Paginación (Cargar más) | Búsqueda por título |
+| --- | --- |
+| ![Botón Cargar más al final de las 20 primeras](img/fase2_paginacion.png) | ![Publicaciones cuyo título contiene dolor](img/fase2_busqueda.png) |
+
+| Detalle con Editar y Eliminar | Respuesta del PATCH |
+| --- | --- |
+| ![Detalle de la publicación 6 con los botones Editar y Eliminar](img/fase2_detalle.png) | ![Respuesta del servidor con el título editado](img/fase2_editar.png) |
+
+| Después de borrar la publicación 6 | Sin internet, desde Room |
+| --- | --- |
+| ![La lista sigue de la 5 a la 7](img/fase2_borrar.png) | ![Lista mostrada con modo avión](img/fase2_cache.png) |
+
+### Pruebas de la Fase 2
+
+| Prueba | Resultado observado | OK |
+| --- | --- | --- |
+| Interceptor | En Logcat cada petición lleva `Accept: application/json` | ✅ |
+| Paginación | Al abrir: `posts?_start=0&_limit=20`; con **Cargar más**: `posts?_start=20&_limit=20` y se agregan abajo | ✅ |
+| Búsqueda | "dolor" filtra por título y no se hace ninguna petición de red | ✅ |
+| Editar | `PATCH posts/6` con `{"title":"Titulo editado con PATCH"}` → 200; la lista muestra el título nuevo | ✅ |
+| Borrar | `DELETE posts/6` → 200; vuelve a la lista y la publicación 6 ya no aparece | ✅ |
+| Caché | Con modo avión la red falla (`UnknownHostException`) y la lista se muestra desde Room | ✅ |
 
 ## Para pensar
 
