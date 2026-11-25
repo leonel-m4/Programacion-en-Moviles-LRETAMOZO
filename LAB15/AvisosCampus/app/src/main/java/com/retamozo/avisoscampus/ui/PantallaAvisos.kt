@@ -52,6 +52,7 @@ fun PantallaAvisos(vm: AvisosViewModel) {
     }
 
     val permiso by vm.permiso.collectAsState()
+    val faltan by vm.faltan.collectAsState()
 
     val lanzador = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -107,14 +108,22 @@ fun PantallaAvisos(vm: AvisosViewModel) {
             }
 
             Tarjeta("Recordatorio") {
-                // TODO Paso 5: recordarEn(), cancelarRecordatorio() y el texto "Faltan N s"
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Button(onClick = { }) {
+                    Button(
+                        onClick = { vm.recordarEn() },
+                        enabled = faltan == null
+                    ) {
                         Text("Recordar en 10 s")
                     }
-                    OutlinedButton(onClick = { }) {
+                    OutlinedButton(
+                        onClick = { vm.cancelarRecordatorio() },
+                        enabled = faltan != null
+                    ) {
                         Text("Cancelar")
                     }
+                }
+                faltan?.let { segundos ->
+                    Text("Faltan $segundos s", fontWeight = FontWeight.Bold)
                 }
             }
 
