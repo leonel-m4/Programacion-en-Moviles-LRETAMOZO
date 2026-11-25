@@ -61,7 +61,8 @@ class AvisosViewModel(private val repo: AvisosRepository) : ViewModel() {
                     "Revisa tu laboratorio pendiente",
                     Origen.RECORDATORIO
                 )
-                _eventos.emit(aviso)
+                // El recordatorio sale por el canal Urgentes
+                _eventos.emit(aviso.copy(urgente = true))
             } finally {
                 _faltan.value = null
             }
