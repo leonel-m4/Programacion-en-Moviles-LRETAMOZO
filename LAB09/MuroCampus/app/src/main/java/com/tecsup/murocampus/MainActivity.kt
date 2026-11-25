@@ -22,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.tecsup.murocampus.data.PostRepositoryRemote
+import com.tecsup.murocampus.data.local.MuroDatabase
 import com.tecsup.murocampus.data.remote.RetrofitClient
 import com.tecsup.murocampus.ui.PantallaCrear
 import com.tecsup.murocampus.ui.PantallaDetalle
@@ -38,7 +39,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val fabrica = PostsViewModelFactory(PostRepositoryRemote(RetrofitClient.api))
+        // El Context solo se usa aquí para abrir la base de datos; el ViewModel no lo conoce.
+        val dao = MuroDatabase.obtener(applicationContext).postDao()
+        val fabrica = PostsViewModelFactory(PostRepositoryRemote(RetrofitClient.api, dao))
 
         setContent {
             MuroCampusTheme {
