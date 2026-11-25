@@ -48,6 +48,10 @@ class PostsViewModel(private val repo: PostRepository) : ViewModel() {
     private val _creado = MutableStateFlow<UiState<Post>?>(null)
     val creado = _creado.asStateFlow()
 
+    // null = no se pidió borrar; Exito lleva el id de la publicación borrada.
+    private val _borrado = MutableStateFlow<UiState<Int>?>(null)
+    val borrado = _borrado.asStateFlow()
+
     private var trabajoLista: Job? = null
     private var trabajoDetalle: Job? = null
 
@@ -76,6 +80,7 @@ class PostsViewModel(private val repo: PostRepository) : ViewModel() {
 
     fun abrir(id: Int) {
         trabajoDetalle?.cancel()
+        _borrado.value = null
         trabajoDetalle = viewModelScope.launch {
             _detalle.value = UiState.Cargando
             // Dos llamadas a la vez: el post y sus comentarios.
@@ -103,5 +108,26 @@ class PostsViewModel(private val repo: PostRepository) : ViewModel() {
                 .onSuccess { _creado.value = UiState.Exito(it) }
                 .onFailure { _creado.value = UiState.Error(mensajeDe(it)) }
         }
+    }
+
+    fun borrar(id: Int) {
+        viewModelScope.launch {
+            _borrado.value = UiState.Cargando
+            repo.borrar(id)
+                .onSuccess {
+                    // JSONPlaceholder no borra de verdad: se quita de la lista ya descargada.
+                    val actual = _lista.value
+                    if (actual is UiState.Exito) {
+                        _lista.value = UiState.Exito(actual.datos.filterNot { it.id == id })
+                    }
+                    _borrado.value = UiState.Exito(id)
+                }
+                .onFailure { _borrado.value = UiState.Error(mensajeDe(it)) }
+        }
+    }
+
+    // La pantalla avisa que ya mostró el resultado del borrado.
+    fun limpiarBorrado() {
+        _borrado.value = null
     }
 }

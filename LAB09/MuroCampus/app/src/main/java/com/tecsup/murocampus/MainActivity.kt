@@ -83,7 +83,11 @@ class MainActivity : ComponentActivity() {
                                 }
                             )
                         } else {
-                            PantallaDetalle(vm = vm, id = id)
+                            PantallaDetalle(
+                                vm = vm,
+                                id = id,
+                                onBorrado = { idSeleccionado = null }
+                            )
                         }
                     }
                 }
