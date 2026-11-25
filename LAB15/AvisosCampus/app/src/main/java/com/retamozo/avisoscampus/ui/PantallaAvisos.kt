@@ -101,8 +101,7 @@ fun PantallaAvisos(vm: AvisosViewModel) {
             // TODO Paso 8: recuadro de error con el mensaje y el botón "Abrir ajustes"
 
             Tarjeta("Avisos") {
-                // TODO Paso 3: llamar a vm.avisarAhora()
-                Button(onClick = { }) {
+                Button(onClick = { vm.avisarAhora() }) {
                     Text("Mostrar aviso")
                 }
             }
