@@ -1,9 +1,12 @@
 package com.retamozo.avisoscampus.ui
 
 import android.Manifest
+import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
+import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -52,12 +55,13 @@ fun PantallaAvisos(vm: AvisosViewModel) {
     LaunchedEffect(Unit) {
         vm.eventos.collect { aviso ->
             val mostrado = Notificador.mostrar(contexto, aviso)
-            // TODO Paso 8: si no se mostró, avisar al ViewModel
+            if (!mostrado) vm.noSePudoMostrar()
         }
     }
 
     val avisos by vm.avisos.collectAsState()
     val permiso by vm.permiso.collectAsState()
+    val mensaje by vm.mensaje.collectAsState()
     val faltan by vm.faltan.collectAsState()
     val escuchando by vm.escuchandoAvion.collectAsState()
 
@@ -121,7 +125,30 @@ fun PantallaAvisos(vm: AvisosViewModel) {
                 }
             }
 
-            // TODO Paso 8: recuadro de error con el mensaje y el botón "Abrir ajustes"
+            mensaje?.let { texto ->
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = texto,
+                            color = MaterialTheme.colorScheme.onErrorContainer
+                        )
+                        OutlinedButton(onClick = { abrirAjustesNotificaciones(contexto) }) {
+                            Text("Abrir ajustes")
+                        }
+                    }
+                }
+            }
 
             Tarjeta("Avisos") {
                 Button(onClick = { vm.avisarAhora() }) {
@@ -165,6 +192,16 @@ fun PantallaAvisos(vm: AvisosViewModel) {
 
             HistorialAvisos(avisos)
         }
+    }
+}
+
+private fun abrirAjustesNotificaciones(contexto: Context) {
+    val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+        .putExtra(Settings.EXTRA_APP_PACKAGE, contexto.packageName)
+    try {
+        contexto.startActivity(intent)
+    } catch (_: ActivityNotFoundException) {
+        // Si el celular no tiene esa pantalla, la app no se cierra
     }
 }
 
