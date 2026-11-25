@@ -26,6 +26,12 @@ data class Comentario(
     val body: String
 )
 
+// Lo que enviamos con PATCH: solo el campo que cambia.
+@Serializable
+data class EdicionPost(
+    val title: String
+)
+
 @Serializable
 data class NuevoPost(
     val userId: Int,

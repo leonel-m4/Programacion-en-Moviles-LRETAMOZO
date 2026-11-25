@@ -52,6 +52,10 @@ class PostsViewModel(private val repo: PostRepository) : ViewModel() {
     private val _borrado = MutableStateFlow<UiState<Int>?>(null)
     val borrado = _borrado.asStateFlow()
 
+    // null = aún no se guardó la edición; Exito lleva la respuesta del servidor.
+    private val _editado = MutableStateFlow<UiState<Post>?>(null)
+    val editado = _editado.asStateFlow()
+
     private var trabajoLista: Job? = null
     private var trabajoDetalle: Job? = null
 
@@ -124,6 +128,34 @@ class PostsViewModel(private val repo: PostRepository) : ViewModel() {
                 }
                 .onFailure { _borrado.value = UiState.Error(mensajeDe(it)) }
         }
+    }
+
+    fun editarTitulo(id: Int, titulo: String) {
+        viewModelScope.launch {
+            _editado.value = UiState.Cargando
+            repo.editarTitulo(id, titulo)
+                .onSuccess { respuesta ->
+                    _editado.value = UiState.Exito(respuesta)
+                    // Se actualiza el título en la lista y en el detalle ya descargados.
+                    val actual = _lista.value
+                    if (actual is UiState.Exito) {
+                        _lista.value = UiState.Exito(
+                            actual.datos.map { if (it.id == id) it.copy(title = respuesta.title) else it }
+                        )
+                    }
+                    val detalleActual = _detalle.value
+                    if (detalleActual is UiState.Exito && detalleActual.datos.post.id == id) {
+                        val post = detalleActual.datos.post.copy(title = respuesta.title)
+                        _detalle.value = UiState.Exito(detalleActual.datos.copy(post = post))
+                    }
+                }
+                .onFailure { _editado.value = UiState.Error(mensajeDe(it)) }
+        }
+    }
+
+    // Al abrir la pantalla de edición no se muestra el resultado anterior.
+    fun limpiarEdicion() {
+        _editado.value = null
     }
 
     // La pantalla avisa que ya mostró el resultado del borrado.

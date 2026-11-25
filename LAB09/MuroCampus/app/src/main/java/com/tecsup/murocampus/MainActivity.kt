@@ -25,6 +25,7 @@ import com.tecsup.murocampus.data.PostRepositoryRemote
 import com.tecsup.murocampus.data.remote.RetrofitClient
 import com.tecsup.murocampus.ui.PantallaCrear
 import com.tecsup.murocampus.ui.PantallaDetalle
+import com.tecsup.murocampus.ui.PantallaEditar
 import com.tecsup.murocampus.ui.PantallaLista
 import com.tecsup.murocampus.ui.theme.MuroCampusTheme
 import com.tecsup.murocampus.viewmodel.PostsViewModel
@@ -47,9 +48,15 @@ class MainActivity : ComponentActivity() {
                 var idSeleccionado by rememberSaveable { mutableStateOf<Int?>(null) }
                 // true = se ve la pantalla para crear una publicación.
                 var creando by rememberSaveable { mutableStateOf(false) }
+                // Título con el que se abre la edición; null = no se está editando.
+                var tituloEditar by rememberSaveable { mutableStateOf<String?>(null) }
 
                 BackHandler(enabled = idSeleccionado != null || creando) {
-                    if (creando) creando = false else idSeleccionado = null
+                    when {
+                        creando -> creando = false
+                        tituloEditar != null -> tituloEditar = null
+                        else -> idSeleccionado = null
+                    }
                 }
 
                 Scaffold(
@@ -72,8 +79,11 @@ class MainActivity : ComponentActivity() {
                 ) { espacio ->
                     Box(Modifier.fillMaxSize().padding(espacio)) {
                         val id = idSeleccionado
+                        val titulo = tituloEditar
                         if (creando) {
                             PantallaCrear(vm = vm)
+                        } else if (id != null && titulo != null) {
+                            PantallaEditar(vm = vm, id = id, tituloActual = titulo)
                         } else if (id == null) {
                             PantallaLista(
                                 vm = vm,
@@ -86,7 +96,11 @@ class MainActivity : ComponentActivity() {
                             PantallaDetalle(
                                 vm = vm,
                                 id = id,
-                                onBorrado = { idSeleccionado = null }
+                                onBorrado = { idSeleccionado = null },
+                                onEditar = { tituloPost ->
+                                    vm.limpiarEdicion()
+                                    tituloEditar = tituloPost
+                                }
                             )
                         }
                     }

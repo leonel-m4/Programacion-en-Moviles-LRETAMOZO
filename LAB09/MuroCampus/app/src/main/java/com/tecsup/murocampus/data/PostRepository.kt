@@ -2,6 +2,7 @@ package com.tecsup.murocampus.data
 
 import com.tecsup.murocampus.data.remote.PostApi
 import com.tecsup.murocampus.model.Comentario
+import com.tecsup.murocampus.model.EdicionPost
 import com.tecsup.murocampus.model.NuevoPost
 import com.tecsup.murocampus.model.Post
 import retrofit2.HttpException
@@ -14,6 +15,7 @@ interface PostRepository {
     suspend fun porUsuario(userId: Int): Result<List<Post>>
     suspend fun crear(nuevo: NuevoPost): Result<Post>
     suspend fun borrar(id: Int): Result<Unit>
+    suspend fun editarTitulo(id: Int, titulo: String): Result<Post>
 }
 
 class PostRepositoryRemote(private val api: PostApi) : PostRepository {
@@ -35,6 +37,9 @@ class PostRepositoryRemote(private val api: PostApi) : PostRepository {
         // Con Response<Unit> Retrofit no lanza la excepción: hay que revisar el código.
         if (!respuesta.isSuccessful) throw HttpException(respuesta)
     }
+
+    override suspend fun editarTitulo(id: Int, titulo: String): Result<Post> =
+        llamar { api.editar(id, EdicionPost(title = titulo)) }
 
     private suspend fun <T> llamar(bloque: suspend () -> T): Result<T> =
         try {

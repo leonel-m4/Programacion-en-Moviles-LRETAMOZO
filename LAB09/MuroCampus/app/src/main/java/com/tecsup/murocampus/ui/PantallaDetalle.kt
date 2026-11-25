@@ -23,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -32,7 +33,12 @@ import com.tecsup.murocampus.viewmodel.PostsViewModel
 import com.tecsup.murocampus.viewmodel.UiState
 
 @Composable
-fun PantallaDetalle(vm: PostsViewModel, id: Int, onBorrado: () -> Unit) {
+fun PantallaDetalle(
+    vm: PostsViewModel,
+    id: Int,
+    onBorrado: () -> Unit,
+    onEditar: (titulo: String) -> Unit
+) {
     val estado by vm.detalle.collectAsStateWithLifecycle()
     val borrado by vm.borrado.collectAsStateWithLifecycle()
 
@@ -77,8 +83,11 @@ fun PantallaDetalle(vm: PostsViewModel, id: Int, onBorrado: () -> Unit) {
                             Spacer(Modifier.height(12.dp))
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.End
+                                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End)
                             ) {
+                                OutlinedButton(onClick = { onEditar(post.title) }) {
+                                    Text("Editar")
+                                }
                                 OutlinedButton(
                                     onClick = { vm.borrar(post.id) },
                                     enabled = borrado != UiState.Cargando,
