@@ -14,7 +14,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.tecsup.murocampus.data.PostRepositoryRemote
+import com.tecsup.murocampus.data.remote.RetrofitClient
+import com.tecsup.murocampus.ui.PantallaLista
 import com.tecsup.murocampus.ui.theme.MuroCampusTheme
+import com.tecsup.murocampus.viewmodel.PostsViewModel
+import com.tecsup.murocampus.viewmodel.PostsViewModelFactory
 
 class MainActivity : ComponentActivity() {
 
@@ -23,8 +29,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        val fabrica = PostsViewModelFactory(PostRepositoryRemote(RetrofitClient.api))
+
         setContent {
             MuroCampusTheme {
+                val vm: PostsViewModel = viewModel(factory = fabrica)
+
                 Scaffold(
                     topBar = {
                         TopAppBar(
@@ -36,7 +46,9 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                 ) { espacio ->
-                    Box(Modifier.fillMaxSize().padding(espacio))
+                    Box(Modifier.fillMaxSize().padding(espacio)) {
+                        PantallaLista(vm = vm)
+                    }
                 }
             }
         }
